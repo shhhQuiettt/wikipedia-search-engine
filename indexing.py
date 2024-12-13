@@ -27,10 +27,6 @@ class InvertedIndex(ABC):
     def build_from_dict(self, inverted_index_dict: dict):
         pass
 
-    @abstractmethod
-    def add_document(self, document: Document) -> Any:
-        pass
-
 
 class SqliteInvertedIndex(InvertedIndex):
     def __init__(self, db_path):
@@ -71,7 +67,6 @@ class SqliteInvertedIndex(InvertedIndex):
 
     def build_from_dict(self, inverted_index_dict: dict[str, list[Posting]]):
         for term, posting_list in inverted_index_dict.items():
-
             for posting in posting_list:
                 self.cursor.execute(
                     """
@@ -90,17 +85,7 @@ class SqliteInvertedIndex(InvertedIndex):
 
         self.connection.commit()
 
-    def add_document(self, document: Document) -> int:
-        res = self.cursor.execute(
-            """
-            INSERT INTO documents (id, url, title) VALUES (?,  ?)
-            """,
-            (document.url, document.title),
-        )
-        print(res)
-
         self.connection.commit()
-        return 0
 
     def fetch_all(self):
         self.cursor.execute(
@@ -129,7 +114,7 @@ def worker(
                 if term not in inverted_index_dict:
                     inverted_index_dict[term] = []
 
-                inverted_index_dict[term].append(Posting(document.id, count))
+                inverted_index_dict[term].append(Posting(document, count))
 
         print(f"Indexed {document.url}")
 
