@@ -1,11 +1,10 @@
 import bs4
 from queue import Queue
+from typing import Optional
 from dataclasses import dataclass
 import asyncio
 import httpx
 from time import perf_counter
-
-INITIAL_URL = "https://en.wikipedia.org/wiki/Hairy_ball_theorem"
 
 
 class Document:
@@ -24,6 +23,8 @@ class WikiCrawler:
         self,
         client: httpx.AsyncClient,
         documents: Queue,
+        initial_url: str,
+        initial_seen: Optional[set] = None,
         *,
         total_pages: int,
         workers: int,
@@ -32,13 +33,17 @@ class WikiCrawler:
         self.client = client
         self.workers = workers
         self.documents = documents
+        self.initial_url = initial_url
 
-        self.seen = set()
+        self.seen = initial_seen if initial_seen is not None else set()
+
+        assert initial_url not in self.seen
+
         self.to_visit = asyncio.Queue()
         self.sucessfully_extracted = 0
 
     async def run(self):
-        await self.to_visit.put(INITIAL_URL)
+        await self.to_visit.put(self.initial_url)
         coroutines = [self.worker() for _ in range(self.workers)]
         await asyncio.gather(*coroutines)
 
@@ -76,7 +81,8 @@ class WikiCrawler:
 
             urls = self.get_urls(content)
 
-            self.documents.put(Document(url, response.url.path, content.get_text()))
+            title = soup.find("h1", {"id": "firstHeading"}).get_text()
+            self.documents.put(Document(url, title, content.get_text()))
 
             for url in urls:
                 await self.to_visit.put(url)
@@ -93,11 +99,21 @@ class WikiCrawler:
         ]
 
 
-def crawl(documents: Queue, total_pages: int = 1000, workers: int = 30):
+def crawl(
+    documents: Queue,
+    initial_url: str,
+    seen_urls: Optional[set] = None,
+    total_pages: int = 1000,
+    workers: int = 30,
+):
     crawler = WikiCrawler(
-        httpx.AsyncClient(), documents, total_pages=total_pages, workers=workers
+        httpx.AsyncClient(),
+        documents,
+        initial_url,
+        seen_urls,
+        total_pages=total_pages,
+        workers=workers,
     )
-    print("Starting crawler")
     start = perf_counter()
     asyncio.run(crawler.run())
     end = perf_counter()

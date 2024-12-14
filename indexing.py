@@ -1,5 +1,7 @@
 from queue import Queue
 from typing import Any
+import numpy as np
+import numpy.typing as npt
 from pprint import pprint
 from dataclasses import dataclass
 import sqlite3
@@ -27,6 +29,18 @@ class InvertedIndex(ABC):
     def build_from_dict(self, inverted_index_dict: dict):
         pass
 
+    @abstractmethod
+    def get_matrix(self) -> npt.NDArray:
+        pass
+
+    @abstractmethod
+    def get_document(self, doc_id: int) -> tuple:
+        pass
+
+    @abstractmethod
+    def get_all_documents_urls(self) -> set[str]:
+        pass
+
 
 class SqliteInvertedIndex(InvertedIndex):
     def __init__(self, db_path):
@@ -51,7 +65,9 @@ class SqliteInvertedIndex(InvertedIndex):
                 )
             """
         )
+        self.connection.commit()
 
+    def clean_db(self):
         self.cursor.execute(
             """
             DELETE FROM inverted_index
@@ -62,7 +78,6 @@ class SqliteInvertedIndex(InvertedIndex):
             DELETE FROM documents
             """
         )
-
         self.connection.commit()
 
     def build_from_dict(self, inverted_index_dict: dict[str, list[Posting]]):
@@ -86,6 +101,50 @@ class SqliteInvertedIndex(InvertedIndex):
         self.connection.commit()
 
         self.connection.commit()
+
+    def get_matrix(self) -> npt.NDArray:
+        self.cursor.execute(
+            """
+                SELECT count(*) FROM documents
+                """
+        )
+
+        no_of_documents = self.cursor.fetchone()[0]
+
+        self.cursor.execute(
+            """
+                SELECT term, doc_ids FROM inverted_index ORDER BY term
+            """
+        )
+
+        inverted_index = self.cursor.fetchall()
+
+        matrix = np.zeros((no_of_documents, len(inverted_index)))
+
+        for term_id, (term, posting_list) in enumerate(inverted_index):
+            for posting in posting_list.split(";"):
+                doc_id, bag_of_words = posting.split(":")
+                matrix[int(doc_id), term_id] = bag_of_words
+
+        return matrix
+
+    def get_document(self, doc_id: int) -> tuple:
+        self.cursor.execute(
+            """
+            SELECT * FROM documents WHERE id = ?
+            """,
+            (doc_id,),
+        )
+
+        return self.cursor.fetchone()
+
+    def get_all_documents_urls(self) -> set[str]:
+        self.cursor.execute(
+            """
+            SELECT url FROM documents
+            """
+        )
+        return set([url for url, in self.cursor.fetchall()])
 
     def fetch_all(self):
         self.cursor.execute(
