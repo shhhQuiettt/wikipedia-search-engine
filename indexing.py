@@ -1,4 +1,4 @@
-from queue import Queue
+from queue import Empty, Queue
 from typing import Any
 import numpy as np
 import numpy.typing as npt
@@ -41,6 +41,14 @@ class InvertedIndex(ABC):
     def get_all_documents_urls(self) -> set[str]:
         pass
 
+    @abstractmethod
+    def get_document_id(self, url: str) -> Any:
+        pass
+
+    @abstractmethod
+    def get_term_id(self, term: str) -> Any:
+        pass
+
 
 class SqliteInvertedIndex(InvertedIndex):
     def __init__(self, db_path):
@@ -50,7 +58,8 @@ class SqliteInvertedIndex(InvertedIndex):
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS inverted_index (
-                term TEXT PRIMARY KEY,
+                id INTEGER PRIMARY KEY,
+                term TEXT UNIQUE,
                 doc_ids TEXT
             )
             """
@@ -81,6 +90,14 @@ class SqliteInvertedIndex(InvertedIndex):
         self.connection.commit()
 
     def build_from_dict(self, inverted_index_dict: dict[str, list[Posting]]):
+        n_documents = max(
+            [
+                posting.document.id + 1
+                for posting_list in inverted_index_dict.values()
+                for posting in posting_list
+            ]
+        )
+
         for term, posting_list in inverted_index_dict.items():
             for posting in posting_list:
                 self.cursor.execute(
@@ -90,15 +107,22 @@ class SqliteInvertedIndex(InvertedIndex):
                     (posting.document.id, posting.document.url, posting.document.title),
                 )
 
-            posting_list_str = ";".join([str(posting) for posting in posting_list])
+            max_count = max([posting.bag_of_words for posting in posting_list])
+            idf = np.log(n_documents / (len(posting_list) + 1))
+
+            posting_list_str = ";".join(
+                [
+                    f"{posting.document.id}:{ idf * posting.bag_of_words / max_count }"
+                    for posting in posting_list
+                ]
+            )
+            # start transaction
             self.cursor.execute(
                 """
                 INSERT INTO inverted_index (term, doc_ids) VALUES (?, ?)
                 """,
                 (term, posting_list_str),
             )
-
-        self.connection.commit()
 
         self.connection.commit()
 
@@ -146,13 +170,33 @@ class SqliteInvertedIndex(InvertedIndex):
         )
         return set([url for url, in self.cursor.fetchall()])
 
-    def fetch_all(self):
+    def get_document_id(self, url: str) -> Any:
         self.cursor.execute(
             """
-            SELECT * FROM inverted_index
-            """
+            SELECT id FROM documents WHERE url = ?
+            """,
+            (url,),
         )
-        return self.cursor.fetchall()
+
+        result = self.cursor.fetchone()
+        if result is None:
+            return None
+
+        return result[0]
+
+    def get_term_id(self, term: str) -> Any:
+        self.cursor.execute(
+            """
+            SELECT id FROM inverted_index WHERE term = ?
+            """,
+            (term,),
+        )
+
+        result = self.cursor.fetchone()
+        if result is None:
+            return None
+
+        return result[0]
 
 
 def stopping_condition(inverted_index_dict):
@@ -165,7 +209,13 @@ def worker(
     inverted_index_dict_mutex: threading.Lock,
 ):
     while stopping_condition(inverted_index_dict):
-        document = documents.get(timeout=10)
+        try:
+            document = documents.get(timeout=10)
+
+        except Empty:
+            print("No more documents to index")
+            return
+
         tokens = tokenize(document.text)
         term_counter = get_term_couter(tokens)
         with inverted_index_dict_mutex:

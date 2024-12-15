@@ -19,11 +19,3 @@ def get_text(url):
 
 def get_term_couter(tokens) -> Counter:
     return Counter(tokens)
-
-
-@dataclass
-class Document:
-    id: int
-    url: str
-    title: str
-    text: str

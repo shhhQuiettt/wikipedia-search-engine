@@ -37,7 +37,7 @@ class WikiCrawler:
 
         self.seen = initial_seen if initial_seen is not None else set()
 
-        assert initial_url not in self.seen
+        assert initial_url not in self.seen, "Initial URL should not be in seen URLs"
 
         self.to_visit = asyncio.Queue()
         self.sucessfully_extracted = 0
