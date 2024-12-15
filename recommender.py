@@ -15,6 +15,15 @@ SimilarityFunction = Callable[[npt.NDArray, npt.NDArray], float]
 def cosine_similarity(doc1: npt.NDArray, doc2: npt.NDArray) -> float:
     return np.dot(doc1, doc2) / (np.linalg.norm(doc1) * np.linalg.norm(doc2))
 
+def jacard_similarity(doc1: npt.NDArray, doc2: npt.NDArray) -> float:
+    return np.dot(doc1, doc2) / (np.linalg.norm(doc1) + np.linalg.norm(doc2) - np.dot(doc1, doc2))
+
+def pearson_similarity(doc1: npt.NDArray, doc2: npt.NDArray) -> float:
+    return np.corrcoef(doc1, doc2)[0, 1]
+
+
+
+
 
 def k_nearest_to_centroid(
     document_vectors: list[npt.NDArray],
@@ -99,7 +108,7 @@ def main():
             document_vectors.append(inverted_index_matrix[doc_id])
 
     m = inverted_index.get_matrix()
-
+    
     best_ids = k_nearest_to_centroid(document_vectors, m, 5, cosine_similarity)
 
     print(f"Best ids: {best_ids}")
