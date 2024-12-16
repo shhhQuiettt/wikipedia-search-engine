@@ -5,5 +5,6 @@ if ! [ -x "$(command -v pandoc)" ]; then
   exit 1
 fi
 
-pandoc -s -f markdown -t html -o reports/report.html README.md --mathjax --metadata title="Wikipedia search engine"
+pandoc -s -f markdown -t html -o reports/report.html README.md --mathjax --css=reports/styling.css --metadata title="Wikipedia search engine"
+
 

@@ -11,28 +11,31 @@ INITIAL_URL3 = "https://en.wikipedia.org/wiki/Hedgehog"
 
 
 def main():
-    documents = Queue()
+    import nltk
 
-    # crawler_thread = Thread(target=crawl, args=(documents, 10, 30))
-    # indexing_thread = Thread(target=perform_indexing, args=(documents,))
+    nltk.download("punkt_tab")
+
+    documents = Queue()
 
     inverted_index = SqliteInvertedIndex("inverted_index.db")
     seen_urls = inverted_index.get_all_documents_urls()
 
     with ThreadPoolExecutor() as executor:
-        crawling_future = executor.submit(
-            crawl, documents, INITIAL_URL, seen_urls, 100, 5
+        crawling_future1 = executor.submit(
+            crawl, documents, INITIAL_URL, seen_urls, 300, 5
         )
-        crawling_future = executor.submit(
-            crawl, documents, INITIAL_URL2, seen_urls, 100, 5
+        crawling_future2 = executor.submit(
+            crawl, documents, INITIAL_URL2, seen_urls, 300, 5
         )
-        crawling_future = executor.submit(
-            crawl, documents, INITIAL_URL3, seen_urls, 100, 5
+        crawling_future3 = executor.submit(
+            crawl, documents, INITIAL_URL3, seen_urls, 300, 5
         )
         indexing_future = executor.submit(perform_indexing, documents, no_of_threads=5)
 
         try:
-            crawling_future.result()
+            crawling_future1.result()
+            crawling_future2.result()
+            crawling_future3.result()
             indexing_future.result()
         except Exception as e:
             print(f"An error occurred: {e}")

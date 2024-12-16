@@ -25,12 +25,17 @@ Process consists of following steps:
 
 1. **Building the database**
 Run 
-`python build_db.py [INITIAL_URL]` 
+```
+python build_db.py [INITIAL_URL]
+```
 to start the crawling process with an *optional* initial url.
 
 2. **Recommending**
-Put visited links inside `previously_seen.txt` and run `python recommend.py` to get the recommended articles.
-
+Put visited links inside `previously_seen.txt` and run: 
+```
+python recommend.py
+```
+to get the recommended articles.
 
 # Implementation
 
