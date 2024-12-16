@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Wikipedia search engine</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Wikipedia search engine</h1>
+</header>
+<h1 id="wikipedia-search-engine-and-recommender-system">Wikipedia Search
+Engine and Recommender System</h1>
+<h2 id="github">(<a
+href="https://github.com/shhhQuiettt/wikipedia-search-engine">Github</a>)</h2>
+<p><span class="math display">\[2 + 2 = 4\]</span></p>
+<p>The aim of this project is to index the Wikipedia and build a
+recommender system in simplified form on top of it. Given a list of
+previously read articles, the system should recommend the next article
+to read. In this simplified form we assume that the documents are
+related, for example that they come from a <strong>single
+session</strong>, and we want to recommend the next article(s) to
+read.</p>
+<p>Process consists of following steps:</p>
+<ol type="1">
+<li><strong>Building the database</strong>
+<ol type="1">
+<li>Downloading the Wikipedia dump</li>
+<li>Text Preprocessing</li>
+<li>Indexing</li>
+<li>Storing the index</li>
+</ol></li>
+<li><strong>Recommending</strong>
+<ol type="1">
+<li>Querying the read documents</li>
+<li>Calculating similarities</li>
+<li>Recommending the k-next articles</li>
+</ol></li>
+</ol>
+<h2 id="usage">Usage</h2>
+<ol type="1">
+<li><p><strong>Building the database</strong> Run
+<code>python build_db.py [INITIAL_URL]</code> to start the crawling
+process with an <em>optional</em> initial url.</p></li>
+<li><p><strong>Recommending</strong> Put visited links inside
+<code>previously_seen.txt</code> and run
+<code>python recommend.py</code> to get the recommended
+articles.</p></li>
+</ol>
+<h1 id="implementation">Implementation</h1>
+<h2 id="building-the-database">Building the database</h2>
+<p>The building and indexing is done <strong>asynchronously</strong>.
+The crawling process is implemented in a coroutine model on a one thread
+(<code>crawling.py</code>), while the indexing is done in a separate
+thread with multiple workers (<code>indexing.py</code>).</p>
+<h3 id="downloading-the-wikipedia-dump">Downloading the Wikipedia
+dump</h3>
+<p>The crawler start from an <strong>initial url</strong> to an
+<em>important</em> mathematical theorem: <a
+href="https://en.wikipedia.org/wiki/Hairy_ball_theorem">Hairy Ball
+Theorem</a>. Then <code>BeautifulSoup</code> is used to parse the html
+and extract the text from the body of the document. We also extract the
+title of the document. The document gets inside a queue, where it will
+await <a href="">preprocessing and indexing</a>, and we search for all
+urls in the body to apply the procedure recursively.</p>
+<h3 id="text-preprocessing">Text Preprocessing</h3>
+<p>The text is preprocessed in the following way: 1. Tokenization We
+tokenize the text using <code>nltk</code>’s <code>word_tokenize</code>
+function to obtain a list of tokens.</p>
+<ol start="2" type="1">
+<li>Lemmatization We lemmatize the tokens using <code>nltk</code>’s
+<code>WordNetLemmatizer</code> to extract the base word of the token.
+For example the word “running” will be lemmatized to “run”.</li>
+</ol>
+<h3 id="indexing">Indexing</h3>
+<p>We want to store <strong>TF-IDF</strong> values for each word in
+document:</p>
+<p><span class="math display">\[ \text{TF}(\text{term}, \text{document})
+= \frac{\#\text{ term appears in document}}{\#\text{ the most frequent
+term in document}} \]</span></p>
+<p><span class="math display">\[ \text{IDF}(\text{term}) = \log \left(
+\frac{\text{total number of documents}}{\text{number of documents
+containing term}} \right) \]</span></p>
+<p><span class="math display">\[ \text{TF-IDF}(\text{term},
+\text{document}) = \text{TF}(\text{term}, \text{document}) \times
+\text{IDF}(\text{term}) \]</span></p>
+<p>The <strong>IDF</strong> is important in order to prioritize terms
+with <strong>high entropy</strong> among other documents</p>
+<h3 id="storing-the-index">Storing the index</h3>
+<p>In the current implementation we store inverted index inside
+<strong>sqlite</strong> database, but we abstract the index storage to
+an <em>abstract class</em> <code>InvertedIndex</code> to possibly test
+other storage methods like <strong>NoSQL</strong> databases like
+<em>mongoDB</em> or <strong>RAM-base</strong> like <em>Redis</em></p>
+<h2 id="recommending">Recommending</h2>
+<p>The read documents are queried from the database and the similarities
+are calculated using the <strong>cosine similarity</strong>. The cosine
+similarity is calculated as follows:</p>
+<p><span class="math display">\[ \text{cosine similarity}(\text{doc1},
+\text{doc2}) = \frac{\text{doc1} \cdot \text{doc2}}{\| \text{doc1} \|
+\times \| \text{doc2} \|} \]</span></p>
+<p>Where document vector is a vector of <strong>TF-IDF</strong> values
+for each word in the document.</p>
+<p>The implementation allows for using other similarity measures which
+fulfill the <code>similarity_function</code> interface
+(<code>recommender.py</code>)</p>
+<p>In the currenct implementation we assume that the documents come from
+a <strong>single session</strong> and we want to recommend the next
+<code>k</code> article(s) to read.</p>
+<p>We calculate the <strong>centroid</strong> of the read documents and
+recommend the <code>k</code> closest documents to the centroid.</p>
+</body>
+</html>

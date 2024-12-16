@@ -7,7 +7,8 @@ from nltk.tokenize import word_tokenize
 
 def tokenize(text):
     import nltk
-    nltk.download('punkt_tab')
+
+    nltk.download("punkt_tab")
     return [token for token in word_tokenize(text) if token.isalnum()]
 
 

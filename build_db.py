@@ -21,13 +21,13 @@ def main():
 
     with ThreadPoolExecutor() as executor:
         crawling_future = executor.submit(
-            crawl, documents, INITIAL_URL, seen_urls, 1000, 5
+            crawl, documents, INITIAL_URL, seen_urls, 100, 5
         )
         crawling_future = executor.submit(
-            crawl, documents, INITIAL_URL2, seen_urls, 1000, 5
+            crawl, documents, INITIAL_URL2, seen_urls, 100, 5
         )
         crawling_future = executor.submit(
-            crawl, documents, INITIAL_URL3, seen_urls, 1000, 5
+            crawl, documents, INITIAL_URL3, seen_urls, 100, 5
         )
         indexing_future = executor.submit(perform_indexing, documents, no_of_threads=5)
 
