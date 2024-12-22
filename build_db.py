@@ -3,6 +3,8 @@ from indexing import perform_indexing, SqliteInvertedIndex
 from crawler import crawl
 from threading import Thread
 from concurrent.futures import ThreadPoolExecutor
+from nltk.corpus import wordnet
+from nltk.corpus import stopwords
 
 
 INITIAL_URL = "https://en.wikipedia.org/wiki/Hairy_ball_theorem"
@@ -14,6 +16,11 @@ def main():
     import nltk
 
     nltk.download("punkt_tab")
+    nltk.download("stopwords")
+    nltk.download("wordnet")
+
+    stopwords.ensure_loaded()
+    wordnet.ensure_loaded()
 
     documents = Queue()
 
@@ -25,10 +32,10 @@ def main():
             crawl, documents, INITIAL_URL, seen_urls, 400, 5
         )
         crawling_future2 = executor.submit(
-            crawl, documents, INITIAL_URL2, seen_urls, 400, 5
+            crawl, documents, INITIAL_URL2, seen_urls, 300, 5
         )
         crawling_future3 = executor.submit(
-            crawl, documents, INITIAL_URL3, seen_urls, 400, 5
+            crawl, documents, INITIAL_URL3, seen_urls, 300, 5
         )
         indexing_future = executor.submit(perform_indexing, documents, no_of_threads=5)
 

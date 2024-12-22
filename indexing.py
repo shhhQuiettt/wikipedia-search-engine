@@ -2,7 +2,6 @@ from queue import Empty, Queue
 from typing import Any
 import numpy as np
 import numpy.typing as npt
-from pprint import pprint
 from dataclasses import dataclass
 import sqlite3
 from abc import ABC, abstractmethod
@@ -12,6 +11,8 @@ from crawler import Document
 from text_processing import (
     tokenize,
     get_term_couter,
+    remove_stopwords,
+    lemmatize,
 )
 
 
@@ -217,6 +218,9 @@ def worker(
             return
 
         tokens = tokenize(document.text)
+        tokens = remove_stopwords(tokens)
+        tokens = lemmatize(tokens)
+
         term_counter = get_term_couter(tokens)
         with inverted_index_dict_mutex:
             for term, count in term_counter.items():
