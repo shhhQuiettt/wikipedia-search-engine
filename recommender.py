@@ -1,5 +1,6 @@
 from indexing import SqliteInvertedIndex, InvertedIndex
 import sys
+from math import log
 from typing import Callable
 import numpy as np
 import numpy.typing as npt
@@ -56,7 +57,7 @@ def calculate_document_vector(url: str, inverted_index: InvertedIndex) -> npt.ND
     document = soup.find("div", {"id": "bodyContent"}).get_text()
     assert document is not None, f"Failed to find content of link {url}"
 
-    inverted_index_matrix = inverted_index.get_matrix()
+    inverted_index_matrix = inverted_index.get_tf_idf_matrix()
 
     tokens = tokenize(document)
     tokens = remove_stopwords(tokens)
@@ -68,14 +69,13 @@ def calculate_document_vector(url: str, inverted_index: InvertedIndex) -> npt.ND
         term_id = inverted_index.get_term_id(term)
         if term_id is None:
             continue
-        term_matrix_id = term_id - 1
 
-        idf = np.log(
+        idf = log(
             inverted_index_matrix.shape[0]
-            / np.count_nonzero(inverted_index_matrix[:, term_matrix_id])
+            / np.count_nonzero(inverted_index_matrix[:, term_id])
         )
         max_count = max(term_counter.values())
-        document_vector[term_matrix_id] = count * idf / max_count
+        document_vector[term_id] = count * idf / max_count
 
     return document_vector
 
@@ -95,7 +95,7 @@ def main():
         print(url)
 
     inverted_index = SqliteInvertedIndex("inverted_index.db")
-    inverted_index_matrix = inverted_index.get_matrix()
+    inverted_index_matrix = inverted_index.get_tf_idf_matrix()
 
     document_vectors = []
     for url in visited_urls:
@@ -109,7 +109,7 @@ def main():
         else:
             document_vectors.append(inverted_index_matrix[doc_id])
 
-    m = inverted_index.get_matrix()
+    m = inverted_index.get_tf_idf_matrix()
 
     best_ids = k_nearest_to_centroid(document_vectors, m, 5, cosine_similarity)
 

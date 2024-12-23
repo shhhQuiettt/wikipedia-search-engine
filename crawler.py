@@ -8,14 +8,11 @@ from time import perf_counter
 
 
 class Document:
-    id = 0
 
     def __init__(self, url, title, text):
         self.url = url
         self.title = title
         self.text = text
-        self.id = Document.id
-        Document.id += 1
 
 
 class WikiCrawler:
@@ -55,13 +52,11 @@ class WikiCrawler:
                 continue
             self.seen.add(url)
 
-            print(f"Fetching {url}...")
+            print(f"Fetching {url}")
             try:
                 response = await self.client.get(url)
             except httpx.ConnectTimeout as e:
                 print(f"Warining: Failed to fetch {url} due to connection timeout")
-                print(f"{self.sucessfully_extracted=}")
-                print(f"{self.to_visit.qsize()=}")
 
                 continue
 

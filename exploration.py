@@ -5,7 +5,7 @@ from recommender import jacard_similarity, cosine_similarity
 
 
 inverted_index = SqliteInvertedIndex("inverted_index.db")
-inverted_index_matrix = inverted_index.get_matrix()
+inverted_index_matrix = inverted_index.get_tf_idf_matrix()
 
 # |%%--%%| <JJTU8YYM7y|VHZ33pkNnw>
 r"""°°°

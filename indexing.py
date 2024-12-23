@@ -1,4 +1,6 @@
 from queue import Empty, Queue
+from time import sleep
+from math import log
 from typing import Any
 import numpy as np
 import numpy.typing as npt
@@ -31,7 +33,7 @@ class InvertedIndex(ABC):
         pass
 
     @abstractmethod
-    def get_matrix(self) -> npt.NDArray:
+    def get_tf_idf_matrix(self) -> npt.NDArray:
         pass
 
     @abstractmethod
@@ -60,21 +62,12 @@ class SqliteInvertedIndex(InvertedIndex):
         self.db_path = db_path
         self.connection = sqlite3.connect(self.db_path)
         self.cursor = self.connection.cursor()
-        self.cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS inverted_index (
-                id INTEGER PRIMARY KEY,
-                term TEXT UNIQUE,
-                doc_ids TEXT
-            )
-            """
-        )
 
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS documents (
                 id INTEGER PRIMARY KEY,
-                url TEXT,
+                url TEXT UNIQUE,
                 title TEXT
                 )
             """
@@ -82,96 +75,93 @@ class SqliteInvertedIndex(InvertedIndex):
 
         self.cursor.execute(
             """
-            CREATE TABLE IF NOT EXISTS term_document (
-                term TEXT PRIMARY KEY,
-                doc_id INTEGER, 
-                count INTEGER
+            CREATE TABLE IF NOT EXISTS terms (
+                id INTEGER PRIMARY KEY,
+                term TEXT UNIQUE,
+                idf REAL
                 )
             """
         )
 
-        self.connection.commit()
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS postings (
+                document_id INTEGER,
+                term_id INTEGER,
+                count INTEGER,
+                tf INTEGER,
+                tf_idf REAL
+            )
+            """
+        )
 
-    def clean_db(self):
-        self.cursor.execute(
-            """
-            DELETE FROM inverted_index
-            """
-        )
-        self.cursor.execute(
-            """
-            DELETE FROM documents
-            """
-        )
         self.connection.commit()
 
     def build_from_dict(self, inverted_index_dict: dict[str, list[Posting]]):
-        n_documents = max(
-            [
-                posting.document.id + 1
-                for posting_list in inverted_index_dict.values()
-                for posting in posting_list
-            ]
-        )
-
-        for term, posting_list in inverted_index_dict.items():
-            for posting in posting_list:
-                self.cursor.execute(
-                    """
-                        INSERT OR IGNORE INTO documents (id, url, title) VALUES (?, ?, ?)
-                    """,
-                    (posting.document.id, posting.document.url, posting.document.title),
-                )
-
-                self.cursor.execute(
-                    """
-                    INSERT INTO term_document (term, doc_id, count) VALUES (?, ?, ?)
-                    )""",
-                    (term, posting.document.id, posting.bag_of_words),
-                )
-
-            max_count = max([posting.bag_of_words for posting in posting_list])
-            idf = np.log(n_documents / (len(posting_list) + 1))
-
-            posting_list_str = ";".join(
+        no_of_documents = len(
+            set(
                 [
-                    f"{posting.document.id}:{ idf * posting.bag_of_words / max_count }"
+                    posting.document.url
+                    for posting_list in inverted_index_dict.values()
                     for posting in posting_list
                 ]
             )
-            # start transaction
+        )
+
+        for term_id, (term, posting_list) in enumerate(inverted_index_dict.items()):
+            idf = log(no_of_documents / len(posting_list))
+
+            print(no_of_documents, len(posting_list), idf)
+
             self.cursor.execute(
                 """
-                INSERT INTO inverted_index (term, doc_ids) VALUES (?, ?)
+                    INSERT INTO terms (id, term, idf) VALUES (?, ?, ?)
                 """,
-                (term, posting_list_str),
+                (term_id, term, idf),
             )
 
+            doc_id = 0
+            for posting in posting_list:
+                max_ocurrences = max((posting.bag_of_words for posting in posting_list))
+                tf = posting.bag_of_words / max_ocurrences
+                tf_idf = tf * idf
+                self.cursor.execute(
+                    """
+                    INSERT OR IGNORE INTO documents (id, url, title) VALUES (?, ?, ?)
+                    """,
+                    (doc_id, posting.document.url, posting.document.title),
+                )
+                doc_id += 1
+
+                self.cursor.execute(
+                    """
+                        INSERT INTO POSTINGS (document_id, term_id, count, tf, tf_idf) VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (doc_id, term_id, posting.bag_of_words, tf, tf_idf),
+                )
         self.connection.commit()
 
-    def get_matrix(self) -> npt.NDArray:
-        self.cursor.execute(
+    def get_tf_idf_matrix(self) -> npt.NDArray:
+        (no_of_documents,) = self.cursor.execute(
             """
-                SELECT count(*) FROM documents
-                """
-        )
-
-        no_of_documents = self.cursor.fetchone()[0]
-
-        self.cursor.execute(
+            SELECT COUNT(*) FROM documents
             """
-                SELECT term, doc_ids FROM inverted_index ORDER BY term
+        ).fetchone()
+
+        (no_of_terms,) = self.cursor.execute(
             """
-        )
+            SELECT COUNT(*) FROM terms
+            """
+        ).fetchone()
 
-        inverted_index = self.cursor.fetchall()
+        matrix = np.zeros((no_of_documents, no_of_terms))
 
-        matrix = np.zeros((no_of_documents, len(inverted_index)))
-
-        for term_id, (term, posting_list) in enumerate(inverted_index):
-            for posting in posting_list.split(";"):
-                doc_id, bag_of_words = posting.split(":")
-                matrix[int(doc_id), term_id] = bag_of_words
+        for doc_id, term_id, tf_idf in self.cursor.execute(
+            """
+            SELECT document_id, term_id, tf_idf FROM postings
+            """
+        ):
+            matrix[doc_id, term_id] = tf_idf
 
         return matrix
 
@@ -210,7 +200,7 @@ class SqliteInvertedIndex(InvertedIndex):
     def get_term_id(self, term: str) -> Any:
         self.cursor.execute(
             """
-            SELECT id FROM inverted_index WHERE term = ?
+            SELECT id FROM terms WHERE term = ?
             """,
             (term,),
         )
@@ -221,30 +211,15 @@ class SqliteInvertedIndex(InvertedIndex):
 
         return result[0]
 
-    # def build_counter(self, counter: dict[str, int]):
-    #     for term, count in counter.items():
-    #         self.cursor.execute(
-    #             """
-    #             INSERT INTO term_counter (term, count) VALUES (?, ?)
-    #             """,
-    #             (term, count),
-    #         )
-
-    #     self.connection.commit()
-
-
-def stopping_condition(inverted_index_dict):
-    return True
-
 
 def worker(
     documents: Queue,
     inverted_index_dict: dict[str, list[Posting]],
     inverted_index_dict_mutex: threading.Lock,
 ):
-    while stopping_condition(inverted_index_dict):
+    while 0 == 0:
         try:
-            document = documents.get(timeout=10)
+            document = documents.get(timeout=3)
 
         except Empty:
             print("No more documents to index")

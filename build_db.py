@@ -1,8 +1,16 @@
+import nltk
+
+nltk.download("punkt_tab")
+nltk.download("stopwords")
+nltk.download("wordnet")
+
 from queue import Queue
 from indexing import perform_indexing, SqliteInvertedIndex
 from crawler import crawl
 from threading import Thread
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_EXCEPTION
+
+
 from nltk.corpus import wordnet
 from nltk.corpus import stopwords
 
@@ -13,12 +21,6 @@ INITIAL_URL3 = "https://en.wikipedia.org/wiki/Hedgehog"
 
 
 def main():
-    import nltk
-
-    nltk.download("punkt_tab")
-    nltk.download("stopwords")
-    nltk.download("wordnet")
-
     stopwords.ensure_loaded()
     wordnet.ensure_loaded()
 
@@ -29,25 +31,25 @@ def main():
 
     with ThreadPoolExecutor() as executor:
         crawling_future1 = executor.submit(
-            crawl, documents, INITIAL_URL, seen_urls, 400, 5
+            crawl,
+            documents,
+            INITIAL_URL,
+            seen_urls,
+            10,
+            5,
         )
         crawling_future2 = executor.submit(
-            crawl, documents, INITIAL_URL2, seen_urls, 300, 5
+            crawl, documents, INITIAL_URL2, seen_urls, 10, 5
         )
         crawling_future3 = executor.submit(
-            crawl, documents, INITIAL_URL3, seen_urls, 300, 5
+            crawl, documents, INITIAL_URL3, seen_urls, 10, 5
         )
-        indexing_future = executor.submit(perform_indexing, documents, no_of_threads=5)
+        indexing_future = executor.submit(perform_indexing, documents, no_of_threads=1)
 
-        try:
-            crawling_future1.result()
-            crawling_future2.result()
-            crawling_future3.result()
-            indexing_future.result()
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            print("Shutting down executor...")
-            raise
+        indexing_future.result()
+        crawling_future1.result()
+        crawling_future2.result()
+        crawling_future3.result()
 
 
 if __name__ == "__main__":
