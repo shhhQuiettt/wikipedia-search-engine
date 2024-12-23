@@ -6,7 +6,7 @@ import numpy.typing as npt
 import requests
 import bs4
 from collections import Counter
-from text_processing import tokenize, get_term_couter
+from text_processing import tokenize, get_term_couter, remove_stopwords, lemmatize
 
 
 SimilarityFunction = Callable[[npt.NDArray, npt.NDArray], float]
@@ -15,14 +15,15 @@ SimilarityFunction = Callable[[npt.NDArray, npt.NDArray], float]
 def cosine_similarity(doc1: npt.NDArray, doc2: npt.NDArray) -> float:
     return np.dot(doc1, doc2) / (np.linalg.norm(doc1) * np.linalg.norm(doc2))
 
+
 def jacard_similarity(doc1: npt.NDArray, doc2: npt.NDArray) -> float:
-    return np.dot(doc1, doc2) / (np.linalg.norm(doc1) + np.linalg.norm(doc2) - np.dot(doc1, doc2))
+    bin_doc1 = doc1 > 0
+    bin_doc2 = doc2 > 0
+    return np.sum(bin_doc1 & bin_doc2) / np.sum(bin_doc1 | bin_doc2)
+
 
 def pearson_similarity(doc1: npt.NDArray, doc2: npt.NDArray) -> float:
     return np.corrcoef(doc1, doc2)[0, 1]
-
-
-
 
 
 def k_nearest_to_centroid(
@@ -48,6 +49,7 @@ def k_nearest_to_centroid(
     return list(zip(top_k.tolist(), scores.tolist()))
 
 
+# Calculating the document vector for url not inside the database
 def calculate_document_vector(url: str, inverted_index: InvertedIndex) -> npt.NDArray:
     response = requests.get(url)
     soup = bs4.BeautifulSoup(response.text, "html.parser")
@@ -57,6 +59,8 @@ def calculate_document_vector(url: str, inverted_index: InvertedIndex) -> npt.ND
     inverted_index_matrix = inverted_index.get_matrix()
 
     tokens = tokenize(document)
+    tokens = remove_stopwords(tokens)
+    tokens = lemmatize(tokens)
     term_counter = get_term_couter(tokens)
 
     document_vector = np.zeros(inverted_index_matrix.shape[1])
@@ -77,8 +81,6 @@ def calculate_document_vector(url: str, inverted_index: InvertedIndex) -> npt.ND
 
 
 def main():
-    print("asdf")
-    print(sys.argv)
     if len(sys.argv) != 2:
         print("Usage: python recommender.py <visited_urls_filename>")
         sys.exit(1)
@@ -108,7 +110,7 @@ def main():
             document_vectors.append(inverted_index_matrix[doc_id])
 
     m = inverted_index.get_matrix()
-    
+
     best_ids = k_nearest_to_centroid(document_vectors, m, 5, cosine_similarity)
 
     print(f"Best ids: {best_ids}")

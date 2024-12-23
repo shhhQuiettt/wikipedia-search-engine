@@ -6,151 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Wikipedia search engine</title>
   <style>
-    html {
-      color: #1a1a1a;
-      background-color: #fdfdfd;
-    }
-    body {
-      margin: 0 auto;
-      max-width: 36em;
-      padding-left: 50px;
-      padding-right: 50px;
-      padding-top: 50px;
-      padding-bottom: 50px;
-      hyphens: auto;
-      overflow-wrap: break-word;
-      text-rendering: optimizeLegibility;
-      font-kerning: normal;
-    }
-    @media (max-width: 600px) {
-      body {
-        font-size: 0.9em;
-        padding: 12px;
-      }
-      h1 {
-        font-size: 1.8em;
-      }
-    }
-    @media print {
-      html {
-        background-color: white;
-      }
-      body {
-        background-color: transparent;
-        color: black;
-        font-size: 12pt;
-      }
-      p, h2, h3 {
-        orphans: 3;
-        widows: 3;
-      }
-      h2, h3, h4 {
-        page-break-after: avoid;
-      }
-    }
-    p {
-      margin: 1em 0;
-    }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
-    }
-    img {
-      max-width: 100%;
-    }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      margin-top: 1.4em;
-    }
-    h5, h6 {
-      font-size: 1em;
-      font-style: italic;
-    }
-    h6 {
-      font-weight: normal;
-    }
-    ol, ul {
-      padding-left: 1.7em;
-      margin-top: 1em;
-    }
-    li > ol, li > ul {
-      margin-top: 0;
-    }
-    blockquote {
-      margin: 1em 0 1em 1.7em;
-      padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
-      color: #606060;
-    }
-    code {
-      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
-      font-size: 85%;
-      margin: 0;
-      hyphens: manual;
-    }
-    pre {
-      margin: 1em 0;
-      overflow: auto;
-    }
-    pre code {
-      padding: 0;
-      overflow: visible;
-      overflow-wrap: normal;
-    }
-    .sourceCode {
-     background-color: transparent;
-     overflow: visible;
-    }
-    hr {
-      background-color: #1a1a1a;
-      border: none;
-      height: 1px;
-      margin: 1em 0;
-    }
-    table {
-      margin: 1em 0;
-      border-collapse: collapse;
-      width: 100%;
-      overflow-x: auto;
-      display: block;
-      font-variant-numeric: lining-nums tabular-nums;
-    }
-    table caption {
-      margin-bottom: 0.75em;
-    }
-    tbody {
-      margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
-    }
-    th {
-      border-top: 1px solid #1a1a1a;
-      padding: 0.25em 0.5em 0.25em 0.5em;
-    }
-    td {
-      padding: 0.125em 0.5em 0.25em 0.5em;
-    }
-    header {
-      margin-bottom: 4em;
-      text-align: center;
-    }
-    #TOC li {
-      list-style: none;
-    }
-    #TOC ul {
-      padding-left: 1.3em;
-    }
-    #TOC > ul {
-      padding-left: 0;
-    }
-    #TOC a:not(:hover) {
-      text-decoration: none;
-    }
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -166,6 +21,7 @@
       vertical-align: middle;
     }
   </style>
+  <link rel="stylesheet" href="reports/styling.css" />
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script
   src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
@@ -177,9 +33,9 @@
 </header>
 <h1 id="wikipedia-search-engine-and-recommender-system">Wikipedia Search
 Engine and Recommender System</h1>
-<h2 id="github">(<a
-href="https://github.com/shhhQuiettt/wikipedia-search-engine">Github</a>)</h2>
-<p><span class="math display">\[2 + 2 = 4\]</span></p>
+<h2 id="link-to-github">(<a
+href="https://github.com/shhhQuiettt/wikipedia-search-engine">Link to
+Github</a>)</h2>
 <p>The aim of this project is to index the Wikipedia and build a
 recommender system in simplified form on top of it. Given a list of
 previously read articles, the system should recommend the next article
@@ -205,14 +61,17 @@ read.</p>
 </ol>
 <h2 id="usage">Usage</h2>
 <ol type="1">
-<li><p><strong>Building the database</strong> Run
-<code>python build_db.py [INITIAL_URL]</code> to start the crawling
-process with an <em>optional</em> initial url.</p></li>
-<li><p><strong>Recommending</strong> Put visited links inside
-<code>previously_seen.txt</code> and run
-<code>python recommend.py</code> to get the recommended
-articles.</p></li>
+<li><strong>Building the database</strong> Run</li>
 </ol>
+<pre><code>python build_db.py [INITIAL_URL]</code></pre>
+<p>to start the crawling process with an <em>optional</em> initial
+url.</p>
+<ol start="2" type="1">
+<li><strong>Recommending</strong> Put visited links inside
+<code>previously_seen.txt</code> and run:</li>
+</ol>
+<pre><code>python recommend.py</code></pre>
+<p>to get the recommended articles.</p>
 <h1 id="implementation">Implementation</h1>
 <h2 id="building-the-database">Building the database</h2>
 <p>The building and indexing is done <strong>asynchronously</strong>.
@@ -221,14 +80,18 @@ The crawling process is implemented in a coroutine model on a one thread
 thread with multiple workers (<code>indexing.py</code>).</p>
 <h3 id="downloading-the-wikipedia-dump">Downloading the Wikipedia
 dump</h3>
-<p>The crawler start from an <strong>initial url</strong> to an
+<p>The crawler start from <strong>three initial urls</strong> to: - An
 <em>important</em> mathematical theorem: <a
 href="https://en.wikipedia.org/wiki/Hairy_ball_theorem">Hairy Ball
-Theorem</a>. Then <code>BeautifulSoup</code> is used to parse the html
-and extract the text from the body of the document. We also extract the
-title of the document. The document gets inside a queue, where it will
-await <a href="">preprocessing and indexing</a>, and we search for all
-urls in the body to apply the procedure recursively.</p>
+Theorem</a> - Butterjelly sandwich: <a
+href="https://en.wikipedia.org/wiki/Butterjelly_sandwich">Butterjelly
+sandwich</a> - Hedgehog: <a
+href="https://en.wikipedia.org/wiki/Hedgehog">Hedgehog</a></p>
+<p>Then <code>BeautifulSoup</code> is used to parse the html and extract
+the text from the body of the document. We also extract the title of the
+document. The document gets inside a queue, where it will await <a
+href="">preprocessing and indexing</a>, and we search for all urls in
+the body to apply the procedure recursively.</p>
 <h3 id="text-preprocessing">Text Preprocessing</h3>
 <p>The text is preprocessed in the following way: 1. Tokenization We
 tokenize the text using <code>nltk</code>’s <code>word_tokenize</code>
@@ -269,11 +132,60 @@ similarity is calculated as follows:</p>
 for each word in the document.</p>
 <p>The implementation allows for using other similarity measures which
 fulfill the <code>similarity_function</code> interface
-(<code>recommender.py</code>)</p>
+(<code>recommender.py</code>), so we also tested <strong>Jaccard
+similarity</strong> with binary vectors:</p>
+<p><span class="math display">\[ \text{Jaccard similarity}(\text{doc1},
+\text{doc2}) = \frac{\text{doc1} \cap \text{doc2}}{\text{doc1} \cup
+\text{doc2}} \]</span></p>
 <p>In the currenct implementation we assume that the documents come from
 a <strong>single session</strong> and we want to recommend the next
 <code>k</code> article(s) to read.</p>
 <p>We calculate the <strong>centroid</strong> of the read documents and
 recommend the <code>k</code> closest documents to the centroid.</p>
+<h3 id="example-results">Example results</h3>
+<p>Running the recommender on the following documents from
+<code>./example_visited/previously_seen1.txt</code> with mathematical
+researchers</p>
+<ul>
+<li>Leonhard Euler</li>
+<li>Isaac Newton</li>
+<li>Mathematics</li>
+<li>Functions</li>
+<li>Real number</li>
+</ul>
+<p>We get the following recommendations:</p>
+<ol type="1">
+<li>Calculus:</li>
+</ol>
+<ul>
+<li>Cosine similarity: 0.06</li>
+</ul>
+<ol start="2" type="1">
+<li>Euclidean space:</li>
+</ol>
+<ul>
+<li>Cosine similarity: 0.058</li>
+</ul>
+<ol start="3" type="1">
+<li>List of important publications in mathematics:</li>
+</ol>
+<ul>
+<li>Cosine similarity: 0.056</li>
+</ul>
+<ol start="4" type="1">
+<li>Category theory:</li>
+</ol>
+<ul>
+<li>Cosine similarity: 0.049</li>
+</ul>
+<ol start="5" type="1">
+<li>Manifold:</li>
+</ol>
+<ul>
+<li>Cosine similarity: 0.045</li>
+</ul>
+<p>Which seems reasonable, given that the database contains a lot of
+non-mathematical articles related to butterjelly sandwiches and
+hedgehogs.</p>
 </body>
 </html>

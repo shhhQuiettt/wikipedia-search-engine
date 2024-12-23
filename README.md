@@ -1,9 +1,6 @@
 # Wikipedia Search Engine and Recommender System 
 
-## ([Github](https://github.com/shhhQuiettt/wikipedia-search-engine))
-
-$$2 + 2 = 4$$
-
+## ([Link to Github](https://github.com/shhhQuiettt/wikipedia-search-engine))
 
 The aim of this project is to index the Wikipedia and build a recommender system in simplified form on top of it.
 Given a list of previously read articles, the system should recommend the next article to read.
@@ -45,7 +42,12 @@ The building and indexing is done **asynchronously**. The crawling process is im
 
 ### Downloading the Wikipedia dump
 
-The crawler start from an **initial url** to an _important_ mathematical theorem: [Hairy Ball Theorem](https://en.wikipedia.org/wiki/Hairy_ball_theorem). Then `BeautifulSoup` is used to parse the html and extract the text from the body of the document. We also extract the title of the document. The document gets inside a queue, where it will await [preprocessing and indexing](), and we search for all urls in the body to apply the procedure recursively.
+The crawler start from **three initial urls** to: 
+ - An _important_ mathematical theorem: [Hairy Ball Theorem](https://en.wikipedia.org/wiki/Hairy_ball_theorem)
+ - Butterjelly sandwich: [Butterjelly sandwich](https://en.wikipedia.org/wiki/Butterjelly_sandwich)
+ - Hedgehog: [Hedgehog](https://en.wikipedia.org/wiki/Hedgehog)
+
+Then `BeautifulSoup` is used to parse the html and extract the text from the body of the document. We also extract the title of the document. The document gets inside a queue, where it will await [preprocessing and indexing](), and we search for all urls in the body to apply the procedure recursively.
 
 ### Text Preprocessing
 
@@ -81,36 +83,42 @@ $$ \text{cosine similarity}(\text{doc1}, \text{doc2}) = \frac{\text{doc1} \cdot 
 
 Where document vector is a vector of **TF-IDF** values for each word in the document.
 
-The implementation allows for using other similarity measures which fulfill the `similarity_function` interface (`recommender.py`)
+The implementation allows for using other similarity measures which fulfill the `similarity_function` interface (`recommender.py`), so we also tested **Jaccard similarity** with binary vectors:
+
+$$ \text{Jaccard similarity}(\text{doc1}, \text{doc2}) = \frac{\text{doc1} \cap \text{doc2}}{\text{doc1} \cup \text{doc2}} $$
 
 In the currenct implementation we assume that the documents come from a **single session** and we want to recommend the next `k` article(s) to read. 
 
 We calculate the **centroid** of the read documents and recommend the `k` closest documents to the centroid.
 
+### Example results
+
+Running the recommender on the following documents from `./example_visited/previously_seen1.txt` with mathematical researchers 
+
+- Leonhard Euler
+- Isaac Newton
+- Mathematics
+- Functions
+- Real number
+
+We get the following recommendations:
+
+1. Calculus:
+ - Cosine similarity: 0.06
+
+2. Euclidean space:
+ - Cosine similarity: 0.058
+
+3. List of important publications in mathematics:
+ - Cosine similarity: 0.056
+
+4. Category theory:
+ - Cosine similarity: 0.049
+
+5. Manifold:
+ - Cosine similarity: 0.045
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Which seems reasonable, given that the database contains a lot of non-mathematical articles related to butterjelly sandwiches and hedgehogs.
 
 

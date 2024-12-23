@@ -74,7 +74,7 @@ class WikiCrawler:
             self.sucessfully_extracted += 1
 
             soup = bs4.BeautifulSoup(response.text, "html.parser")
-            content = soup.find("div", {"id": "bodyContent"})
+            content = soup.find("div", {"id": "mw-content-text"})
             if content is None:
                 print(f"Failed to find content of link {url}")
                 continue

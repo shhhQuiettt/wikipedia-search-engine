@@ -50,6 +50,10 @@ class InvertedIndex(ABC):
     def get_term_id(self, term: str) -> Any:
         pass
 
+    # @abstractmethod
+    # def build_counter(self, counter: dict[str, int]):
+    #     pass
+
 
 class SqliteInvertedIndex(InvertedIndex):
     def __init__(self, db_path):
@@ -75,6 +79,17 @@ class SqliteInvertedIndex(InvertedIndex):
                 )
             """
         )
+
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS term_document (
+                term TEXT PRIMARY KEY,
+                doc_id INTEGER, 
+                count INTEGER
+                )
+            """
+        )
+
         self.connection.commit()
 
     def clean_db(self):
@@ -106,6 +121,13 @@ class SqliteInvertedIndex(InvertedIndex):
                         INSERT OR IGNORE INTO documents (id, url, title) VALUES (?, ?, ?)
                     """,
                     (posting.document.id, posting.document.url, posting.document.title),
+                )
+
+                self.cursor.execute(
+                    """
+                    INSERT INTO term_document (term, doc_id, count) VALUES (?, ?, ?)
+                    )""",
+                    (term, posting.document.id, posting.bag_of_words),
                 )
 
             max_count = max([posting.bag_of_words for posting in posting_list])
@@ -198,6 +220,17 @@ class SqliteInvertedIndex(InvertedIndex):
             return None
 
         return result[0]
+
+    # def build_counter(self, counter: dict[str, int]):
+    #     for term, count in counter.items():
+    #         self.cursor.execute(
+    #             """
+    #             INSERT INTO term_counter (term, count) VALUES (?, ?)
+    #             """,
+    #             (term, count),
+    #         )
+
+    #     self.connection.commit()
 
 
 def stopping_condition(inverted_index_dict):
