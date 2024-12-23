@@ -4,10 +4,20 @@ import recommender
 from recommender import jacard_similarity, cosine_similarity
 
 
+
+#|%%--%%| <JJTU8YYM7y|BKwtjaM3EH>
+
+# This may take up some time
+!rm -rf inverted_index.db; python build_db.py 
+
+#|%%--%%| <BKwtjaM3EH|acP0eTQMOW>
+
 inverted_index = SqliteInvertedIndex("inverted_index.db")
 inverted_index_matrix = inverted_index.get_tf_idf_matrix()
 
-# |%%--%%| <JJTU8YYM7y|VHZ33pkNnw>
+
+
+# |%%--%%| <acP0eTQMOW|VHZ33pkNnw>
 r"""°°°
 Let's compare similiarities between various documents 
 °°°"""

@@ -35,14 +35,14 @@ def main():
             documents,
             INITIAL_URL,
             seen_urls,
-            10,
+            500,
             5,
         )
         crawling_future2 = executor.submit(
-            crawl, documents, INITIAL_URL2, seen_urls, 10, 5
+            crawl, documents, INITIAL_URL2, seen_urls, 250, 5
         )
         crawling_future3 = executor.submit(
-            crawl, documents, INITIAL_URL3, seen_urls, 10, 5
+            crawl, documents, INITIAL_URL3, seen_urls, 250, 5
         )
         indexing_future = executor.submit(perform_indexing, documents, no_of_threads=1)
 

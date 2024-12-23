@@ -108,10 +108,10 @@ class SqliteInvertedIndex(InvertedIndex):
             )
         )
 
+        added_documents_urls = set()
+        new_doc_id = 0
         for term_id, (term, posting_list) in enumerate(inverted_index_dict.items()):
             idf = log(no_of_documents / len(posting_list))
-
-            print(no_of_documents, len(posting_list), idf)
 
             self.cursor.execute(
                 """
@@ -120,18 +120,22 @@ class SqliteInvertedIndex(InvertedIndex):
                 (term_id, term, idf),
             )
 
-            doc_id = 0
             for posting in posting_list:
                 max_ocurrences = max((posting.bag_of_words for posting in posting_list))
                 tf = posting.bag_of_words / max_ocurrences
                 tf_idf = tf * idf
-                self.cursor.execute(
-                    """
-                    INSERT OR IGNORE INTO documents (id, url, title) VALUES (?, ?, ?)
-                    """,
-                    (doc_id, posting.document.url, posting.document.title),
-                )
-                doc_id += 1
+
+                if not posting.document.url in added_documents_urls:
+                    self.cursor.execute(
+                        """
+                        INSERT INTO documents (id, url, title) VALUES (?, ?, ?)
+                        """,
+                        (new_doc_id, posting.document.url, posting.document.title),
+                    )
+                    new_doc_id += 1
+                    added_documents_urls.add(posting.document.url)
+
+                doc_id = self.get_document_id(posting.document.url)
 
                 self.cursor.execute(
                     """
