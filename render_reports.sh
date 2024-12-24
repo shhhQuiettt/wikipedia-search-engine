@@ -15,6 +15,7 @@ pandoc -f ipynb -t html  exploration.ipynb -o reports/exploration.md   --embed-r
 
 pandoc -s reports/description.html reports/exploration.html -o reports/REPORT.html --css reports/styling.css  --mathml --embed-resources=true --metadata title="Wikipedia recommender system"
 
-pandoc -f html -t markdown -o README.md --mathjax reports/REPORT.html
+# TODO: Make generating README work
+# pandoc -f html -t markdown -o README.md --mathjax reports/REPORT.html
 
 
