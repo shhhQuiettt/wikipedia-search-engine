@@ -101,37 +101,3 @@ $$ \text{Jaccard similarity}(\text{doc1}, \text{doc2}) = \frac{\text{doc1} \cap 
 In the currenct implementation we assume that the documents come from a **single session** and we want to recommend the next `k` article(s) to read.
 
 We calculate the **centroid** of the read documents and recommend the `k` closest documents to the centroid.
-
-### Example results
-
-Running the recommender on the following documents from `./example_visited/previously_seen1.txt` with mathematical researchers
-
-- Leonhard Euler
-- Isaac Newton
-- Mathematics
-- Functions
-- Real number
-
-We get the following recommendations:
-
-1. Calculus:
-
-- Cosine similarity: 0.06
-
-2. Euclidean space:
-
-- Cosine similarity: 0.058
-
-3. List of important publications in mathematics:
-
-- Cosine similarity: 0.056
-
-4. Category theory:
-
-- Cosine similarity: 0.049
-
-5. Manifold:
-
-- Cosine similarity: 0.045
-
-Which seems reasonable, given that the database contains a lot of non-mathematical articles related to butterjelly sandwiches and hedgehogs.

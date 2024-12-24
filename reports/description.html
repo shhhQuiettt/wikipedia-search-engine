@@ -80,15 +80,9 @@ For example the word “running” will be lemmatized to “run”.</p>
 <h3 id="indexing">Indexing</h3>
 <p>We want to store <strong>TF-IDF</strong> values for each word in
 document:</p>
-<p><span class="math display">\[ \text{TF}(\text{term}, \text{document})
-= \frac{\#\text{ term appears in document}}{\#\text{ the most frequent
-term in document}} \]</span></p>
-<p><span class="math display">\[ \text{IDF}(\text{term}) = \log \left(
-\frac{\text{total number of documents}}{\text{number of documents
-containing term}} \right) \]</span></p>
-<p><span class="math display">\[ \text{TF-IDF}(\text{term},
-\text{document}) = \text{TF}(\text{term}, \text{document}) \times
-\text{IDF}(\text{term}) \]</span></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">TF</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">term</mtext><mo>,</mo><mtext mathvariant="normal">document</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>#</mi><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> term appears in document</mtext></mrow></mrow><mrow><mi>#</mi><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> the most frequent term in document</mtext></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex"> \text{TF}(\text{term}, \text{document}) = \frac{\#\text{ term appears in document}}{\#\text{ the most frequent term in document}} </annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">IDF</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">term</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">total number of documents</mtext><mtext mathvariant="normal">number of documents containing term</mtext></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex"> \text{IDF}(\text{term}) = \log \left( \frac{\text{total number of documents}}{\text{number of documents containing term}} \right) </annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">TF-IDF</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">term</mtext><mo>,</mo><mtext mathvariant="normal">document</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mtext mathvariant="normal">TF</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">term</mtext><mo>,</mo><mtext mathvariant="normal">document</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>×</mo><mtext mathvariant="normal">IDF</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">term</mtext><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex"> \text{TF-IDF}(\text{term}, \text{document}) = \text{TF}(\text{term}, \text{document}) \times \text{IDF}(\text{term}) </annotation></semantics></math></p>
 <p>The <strong>IDF</strong> is important in order to prioritize terms
 with <strong>high entropy</strong> among other documents</p>
 <h3 id="storing-the-index">Storing the index</h3>
@@ -101,65 +95,16 @@ other storage methods like <strong>NoSQL</strong> databases like
 <p>The read documents are queried from the database and the similarities
 are calculated using the <strong>cosine similarity</strong>. The cosine
 similarity is calculated as follows:</p>
-<p><span class="math display">\[ \text{cosine similarity}(\text{doc1},
-\text{doc2}) = \frac{\text{doc1} \cdot \text{doc2}}{\| \text{doc1} \|
-\times \| \text{doc2} \|} \]</span></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">cosine similarity</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">doc1</mtext><mo>,</mo><mtext mathvariant="normal">doc2</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">doc1</mtext><mo>⋅</mo><mtext mathvariant="normal">doc2</mtext></mrow><mrow><mo stretchy="false" form="postfix">∥</mo><mtext mathvariant="normal">doc1</mtext><mo stretchy="false" form="postfix">∥</mo><mo>×</mo><mo stretchy="false" form="postfix">∥</mo><mtext mathvariant="normal">doc2</mtext><mo stretchy="false" form="postfix">∥</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex"> \text{cosine similarity}(\text{doc1}, \text{doc2}) = \frac{\text{doc1} \cdot \text{doc2}}{\| \text{doc1} \| \times \| \text{doc2} \|} </annotation></semantics></math></p>
 <p>Where document vector is a vector of <strong>TF-IDF</strong> values
 for each word in the document.</p>
 <p>The implementation allows for using other similarity measures which
 fulfill the <code>similarity_function</code> interface
 (<code>recommender.py</code>), so we also tested <strong>Jaccard
 similarity</strong> with binary vectors:</p>
-<p><span class="math display">\[ \text{Jaccard similarity}(\text{doc1},
-\text{doc2}) = \frac{\text{doc1} \cap \text{doc2}}{\text{doc1} \cup
-\text{doc2}} \]</span></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Jaccard similarity</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">doc1</mtext><mo>,</mo><mtext mathvariant="normal">doc2</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">doc1</mtext><mo>∩</mo><mtext mathvariant="normal">doc2</mtext></mrow><mrow><mtext mathvariant="normal">doc1</mtext><mo>∪</mo><mtext mathvariant="normal">doc2</mtext></mrow></mfrac></mrow><annotation encoding="application/x-tex"> \text{Jaccard similarity}(\text{doc1}, \text{doc2}) = \frac{\text{doc1} \cap \text{doc2}}{\text{doc1} \cup \text{doc2}} </annotation></semantics></math></p>
 <p>In the currenct implementation we assume that the documents come from
 a <strong>single session</strong> and we want to recommend the next
 <code>k</code> article(s) to read.</p>
 <p>We calculate the <strong>centroid</strong> of the read documents and
 recommend the <code>k</code> closest documents to the centroid.</p>
-<h3 id="example-results">Example results</h3>
-<p>Running the recommender on the following documents from
-<code>./example_visited/previously_seen1.txt</code> with mathematical
-researchers</p>
-<ul>
-<li>Leonhard Euler</li>
-<li>Isaac Newton</li>
-<li>Mathematics</li>
-<li>Functions</li>
-<li>Real number</li>
-</ul>
-<p>We get the following recommendations:</p>
-<ol type="1">
-<li>Calculus:</li>
-</ol>
-<ul>
-<li>Cosine similarity: 0.06</li>
-</ul>
-<ol start="2" type="1">
-<li>Euclidean space:</li>
-</ol>
-<ul>
-<li>Cosine similarity: 0.058</li>
-</ul>
-<ol start="3" type="1">
-<li>List of important publications in mathematics:</li>
-</ol>
-<ul>
-<li>Cosine similarity: 0.056</li>
-</ul>
-<ol start="4" type="1">
-<li>Category theory:</li>
-</ol>
-<ul>
-<li>Cosine similarity: 0.049</li>
-</ul>
-<ol start="5" type="1">
-<li>Manifold:</li>
-</ol>
-<ul>
-<li>Cosine similarity: 0.045</li>
-</ul>
-<p>Which seems reasonable, given that the database contains a lot of
-non-mathematical articles related to butterjelly sandwiches and
-hedgehogs.</p>

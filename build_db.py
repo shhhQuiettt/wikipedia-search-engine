@@ -19,6 +19,8 @@ INITIAL_URL = "https://en.wikipedia.org/wiki/Hairy_ball_theorem"
 INITIAL_URL2 = "https://en.wikipedia.org/wiki/Peanut_butter_and_jelly_sandwich"
 INITIAL_URL3 = "https://en.wikipedia.org/wiki/Hedgehog"
 
+TOTAL_PAGES = 1000
+
 
 def main():
     stopwords.ensure_loaded()
@@ -35,14 +37,14 @@ def main():
             documents,
             INITIAL_URL,
             seen_urls,
-            500,
+            TOTAL_PAGES // 2,
             3,
         )
         crawling_future2 = executor.submit(
-            crawl, documents, INITIAL_URL2, seen_urls, 250, 3
+            crawl, documents, INITIAL_URL2, seen_urls, TOTAL_PAGES // 4, 3
         )
         crawling_future3 = executor.submit(
-            crawl, documents, INITIAL_URL3, seen_urls, 250, 3
+            crawl, documents, INITIAL_URL3, seen_urls, TOTAL_PAGES // 4, 3
         )
         indexing_future = executor.submit(perform_indexing, documents, no_of_threads=1)
 

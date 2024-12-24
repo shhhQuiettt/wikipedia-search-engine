@@ -110,8 +110,6 @@ def main():
 
     best_ids = k_nearest_to_centroid(document_vectors, m, k, cosine_similarity)
 
-    print(f"Best ids: {best_ids}")
-
     print("Recommended documents:")
     for doc_id, score in best_ids:
         print(inverted_index.get_document(int(doc_id)))
