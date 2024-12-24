@@ -1,5 +1,7 @@
 ::: {#title-block-header}
+
 # Wikipedia recommender system {#wikipedia-recommender-system .title}
+
 :::
 
 ## ([Link to Github](https://github.com/shhhQuiettt/wikipedia-search-engine))
@@ -57,11 +59,11 @@ while the indexing is done in a separate thread with multiple workers
 
 The crawler start from **three initial urls** to:
 
--   An *important* mathematical theorem: [Hairy Ball
-    Theorem](https://en.wikipedia.org/wiki/Hairy_ball_theorem)
--   Butterjelly sandwich: [Butterjelly
-    sandwich](https://en.wikipedia.org/wiki/Butterjelly_sandwich)
--   Hedgehog: [Hedgehog](https://en.wikipedia.org/wiki/Hedgehog)
+- An _important_ mathematical theorem: [Hairy Ball
+  Theorem](https://en.wikipedia.org/wiki/Hairy_ball_theorem)
+- Butterjelly sandwich: [Butterjelly
+  sandwich](https://en.wikipedia.org/wiki/Butterjelly_sandwich)
+- Hedgehog: [Hedgehog](https://en.wikipedia.org/wiki/Hedgehog)
 
 Then `BeautifulSoup` is used to parse the html and extract the text from
 the body of the document. We also extract the title of the document. The
@@ -92,7 +94,7 @@ We remove the stopwords using `nltk`'s `stopwords` list.
 
 We want to store **TF-IDF** values for each word in document:
 
-$$\text{TF}\left( \text{term},\text{document} \right) = \frac{\#{\mspace{6mu}\text{term appears in document}}}{\#{\mspace{6mu}\text{the most frequent term in document}}}$$
+$$\text{TF}\left( \text{term},\text{document} \right) = \frac{\text{#}{\mspace{6mu}\text{term appears in document}}}{\text{#}{\mspace{6mu}\text{the most frequent term in document}}}$$
 
 $$\text{IDF}\left( \text{term} \right) = \log\left( \frac{\text{total number of documents}}{\text{number of documents containing term}} \right)$$
 
@@ -104,9 +106,9 @@ entropy** among other documents
 ### Storing the index
 
 In the current implementation we store inverted index inside **sqlite**
-database, but we abstract the index storage to an *abstract class*
+database, but we abstract the index storage to an _abstract class_
 `InvertedIndex` to possibly test other storage methods like **NoSQL**
-databases like *mongoDB* or **RAM-base** like *Redis*
+databases like _mongoDB_ or **RAM-base** like _Redis_
 
 # Recommending
 
@@ -133,47 +135,55 @@ We calculate the **centroid** of the read documents and recommend the
 `k` closest documents to the centroid.
 
 ::: {#some-recommendations .section .cell .markdown}
+
 # Some recommendations
+
 :::
 
 ::: {#1-this-session-relates-to-mathematitics-and-pioneers-of-calculus .section .cell .markdown}
+
 ### 1. This session relates to **Mathematitics** and pioneers of **Calculus**
+
 :::
 
 ::: {.cell .code execution_count="1"}
 ::: {#cb1 .sourceCode}
 ::: {#cb3 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 !cat ./example_visited/previously_seen1.txt
 ```
+
 :::
 :::
 
 ::: {.output .stream .stdout}
-    https://en.wikipedia.org/wiki/Leonhard_Euler
-    https://en.wikipedia.org/wiki/Isaac_Newton
-    https://en.wikipedia.org/wiki/Mathematics
-    https://en.wikipedia.org/wiki/Functions_(mathematics)
-    https://en.wikipedia.org/wiki/Real_number
+https://en.wikipedia.org/wiki/Leonhard_Euler
+https://en.wikipedia.org/wiki/Isaac_Newton
+https://en.wikipedia.org/wiki/Mathematics
+https://en.wikipedia.org/wiki/Functions_(mathematics)
+https://en.wikipedia.org/wiki/Real_number
 :::
 :::
 
 ::: {.cell .code execution_count="2"}
 ::: {#cb3 .sourceCode}
 ::: {#cb5 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 !python recommender.py 5 ./example_visited/previously_seen1.txt
 ```
+
 :::
 :::
 
 ::: {.output .stream .stdout}
-    https://en.wikipedia.org/wiki/Leonhard_Euler not found in the database. Calculating document vector...
-    https://en.wikipedia.org/wiki/Isaac_Newton not found in the database. Calculating document vector...
-    Best ids: [(240, 0.06210137608606608), (258, 0.0590626066522234), (79, 0.054672164284898996), (322, 0.05021229255088811), (184, 0.04862576791724621)]
-    Recommended documents:
-    (240, 'https://en.wikipedia.org/wiki/Hyperreal_numbers', 'Hyperreal number')
-    Cosine similarity: 0.06210137608606608
+https://en.wikipedia.org/wiki/Leonhard_Euler not found in the database. Calculating document vector...
+https://en.wikipedia.org/wiki/Isaac_Newton not found in the database. Calculating document vector...
+Best ids: [(240, 0.06210137608606608), (258, 0.0590626066522234), (79, 0.054672164284898996), (322, 0.05021229255088811), (184, 0.04862576791724621)]
+Recommended documents:
+(240, 'https://en.wikipedia.org/wiki/Hyperreal_numbers', 'Hyperreal number')
+Cosine similarity: 0.06210137608606608
 
     (258, 'https://en.wikipedia.org/wiki/Theorem', 'Theorem')
     Cosine similarity: 0.0590626066522234
@@ -186,6 +196,7 @@ We calculate the **centroid** of the read documents and recommend the
 
     (184, 'https://en.wikipedia.org/wiki/Mathematical_analysis', 'Mathematical analysis')
     Cosine similarity: 0.04862576791724621
+
 :::
 :::
 
@@ -195,39 +206,45 @@ We see topics we would expect for someone interested in **Newton** and
 :::
 
 ::: {#2-this-session-relates-sandwiches .section .cell .markdown}
+
 ### 2. This session relates sandwiches
+
 :::
 
 ::: {.cell .code execution_count="3"}
 ::: {#cb5 .sourceCode}
 ::: {#cb7 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 !cat ./example_visited/previously_seen2.txt
 ```
+
 :::
 :::
 
 ::: {.output .stream .stdout}
-    https://en.wikipedia.org/wiki/Peanut_butter
-    https://en.wikipedia.org/wiki/Lunch
-    https://en.wikipedia.org/wiki/Sandwich
+https://en.wikipedia.org/wiki/Peanut_butter
+https://en.wikipedia.org/wiki/Lunch
+https://en.wikipedia.org/wiki/Sandwich
 :::
 :::
 
 ::: {.cell .code execution_count="4"}
 ::: {#cb7 .sourceCode}
 ::: {#cb9 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 !python recommender.py 5 ./example_visited/previously_seen2.txt
 ```
+
 :::
 :::
 
 ::: {.output .stream .stdout}
-    Best ids: [(560, 0.23502137689424202), (605, 0.20909613026041712), (599, 0.19268899828898028), (583, 0.19119226566432948), (800, 0.18548005955094318)]
-    Recommended documents:
-    (560, 'https://en.wikipedia.org/wiki/Bal%C4%B1k_ekmek', 'Balık ekmek')
-    Cosine similarity: 0.23502137689424202
+Best ids: [(560, 0.23502137689424202), (605, 0.20909613026041712), (599, 0.19268899828898028), (583, 0.19119226566432948), (800, 0.18548005955094318)]
+Recommended documents:
+(560, 'https://en.wikipedia.org/wiki/Bal%C4%B1k_ekmek', 'Balık ekmek')
+Cosine similarity: 0.23502137689424202
 
     (605, 'https://en.wikipedia.org/wiki/Roujiamo', 'Roujiamo')
     Cosine similarity: 0.20909613026041712
@@ -240,6 +257,7 @@ We see topics we would expect for someone interested in **Newton** and
 
     (800, 'https://en.wikipedia.org/wiki/Bag_lunch', 'Packed lunch')
     Cosine similarity: 0.18548005955094318
+
 :::
 :::
 
@@ -249,19 +267,23 @@ in
 :::
 
 ::: {#some-statistics-and-exploration-of-the-results .section .cell .markdown jukit_cell_id="5tJdZ3c28b"}
+
 # Some statistics and exploration of the results
+
 :::
 
 ::: {.cell .code execution_count="5" jukit_cell_id="BKwtjaM3EH"}
 ::: {#cb9 .sourceCode}
 ::: {#cb11 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 import matplotlib.pyplot as plt
 from indexing import SqliteInvertedIndex
 import recommender
 from recommender import jacard_similarity, cosine_similarity
 import numpy as np
 ```
+
 :::
 :::
 :::
@@ -269,170 +291,195 @@ import numpy as np
 ::: {.cell .code execution_count="6" jukit_cell_id="acP0eTQMOW"}
 ::: {#cb10 .sourceCode}
 ::: {#cb12 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 inverted_index = SqliteInvertedIndex("inverted_index.db")
 inverted_index_matrix = inverted_index.get_tf_idf_matrix()
 
 query = lambda query_text: inverted_index.cursor.execute(query_text)
 ```
+
 :::
 :::
 :::
 
 ::: {#number-of-documents .section .cell .markdown jukit_cell_id="mzdCRVc0zz"}
+
 ## Number of documents
+
 :::
 
 ::: {.cell .code execution_count="7" jukit_cell_id="88v3KdgHkG"}
 ::: {#cb11 .sourceCode}
 ::: {#cb13 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 query("select count(*) from documents").fetchone()
 ```
+
 :::
 :::
 
 ::: {.output .execute_result execution_count="7"}
-    (1000,)
+(1000,)
 :::
 :::
 
 ::: {#number-of-terms .section .cell .markdown jukit_cell_id="OF5gpUBFki"}
+
 ### Number of terms
+
 :::
 
 ::: {.cell .code execution_count="8" jukit_cell_id="tlDonAt6DD"}
 ::: {#cb13 .sourceCode}
 ::: {#cb15 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 query("select count(*) from terms").fetchone()
 ```
+
 :::
 :::
 
 ::: {.output .execute_result execution_count="8"}
-    (116470,)
+(116470,)
 :::
 :::
 
 ::: {#top-20-frequently-occuring-terms .section .cell .markdown jukit_cell_id="uDkOPumtEj"}
+
 ### Top 20 frequently occuring terms
+
 :::
 
 ::: {.cell .code execution_count="19" jukit_cell_id="bq6KyOhPAv"}
 ::: {#cb15 .sourceCode}
 ::: {#cb17 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 res = query(
     """
-    select term, sum(count) 
-    from postings p 
-    join terms t on p.term_id = t.id 
-    group by term 
-    having length(term) > 3 
+    select term, sum(count)
+    from postings p
+    join terms t on p.term_id = t.id
+    group by term
+    having length(term) > 3
     order by sum(count) desc
     limit 10
             """
 )
 res.fetchall()
 ```
+
 :::
 :::
 
 ::: {.output .execute_result execution_count="19"}
-    [('shrew', 32304),
-     ('function', 14177),
-     ('retrieved', 12128),
-     ('edit', 11623),
-     ('space', 8069),
-     ('isbn', 7562),
-     ('also', 7100),
-     ('archived', 6817),
-     ('original', 6753),
-     ('number', 6483)]
+[('shrew', 32304),
+('function', 14177),
+('retrieved', 12128),
+('edit', 11623),
+('space', 8069),
+('isbn', 7562),
+('also', 7100),
+('archived', 6817),
+('original', 6753),
+('number', 6483)]
 :::
 :::
 
 ::: {.cell .markdown jukit_cell_id="29HOlidCNL"}
-Despite weirdness of *shrew*, and manually checking, it turns out that
-*shrew* **indeed is** a frequent word in the documents related to
+Despite weirdness of _shrew_, and manually checking, it turns out that
+_shrew_ **indeed is** a frequent word in the documents related to
 mammals and other animals
 :::
 
 ::: {#terms-with-lowest-entropy .section .cell .markdown jukit_cell_id="YnwfvTmBYU"}
+
 ### Terms with lowest entropy
+
 :::
 
 ::: {.cell .code execution_count="10" jukit_cell_id="7iVCUI0aWb"}
 ::: {#cb17 .sourceCode}
 ::: {#cb19 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 query(
     """
         select term, idf from terms order by idf asc limit 10
         """
 ).fetchall()
 ```
+
 :::
 :::
 
 ::: {.output .execute_result execution_count="10"}
-    [('retrieved', 0.0),
-     ('http', 0.0),
-     ('1', 0.022245608947319737),
-     ('reference', 0.03978087001184446),
-     ('edit', 0.06935007813479324),
-     ('2', 0.08773891430800689),
-     ('also', 0.1266976530459575),
-     ('3', 0.1636960926707897),
-     ('see', 0.1779312084926618),
-     ('new', 0.18632957819149354)]
+[('retrieved', 0.0),
+('http', 0.0),
+('1', 0.022245608947319737),
+('reference', 0.03978087001184446),
+('edit', 0.06935007813479324),
+('2', 0.08773891430800689),
+('also', 0.1266976530459575),
+('3', 0.1636960926707897),
+('see', 0.1779312084926618),
+('new', 0.18632957819149354)]
 :::
 :::
 
 ::: {#terms-with-highest-entropy .section .cell .markdown jukit_cell_id="heVO1aiSno"}
+
 ### Terms with highest entropy
+
 :::
 
 ::: {.cell .code execution_count="11" jukit_cell_id="2pSmidhWJs"}
 ::: {#cb19 .sourceCode}
 ::: {#cb21 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 query(
     """
   select term, idf from terms order by idf desc limit 10
   """
 ).fetchall()
 ```
+
 :::
 :::
 
 ::: {.output .execute_result execution_count="11"}
-    [('combable', 6.907755278982137),
-     ('ℝ3', 6.907755278982137),
-     ('idealizes', 6.907755278982137),
-     ('meteorologically', 6.907755278982137),
-     ('accomplishes', 6.907755278982137),
-     ('gidea', 6.907755278982137),
-     ('1584882530', 6.907755278982137),
-     ('abbildung', 6.907755278982137),
-     ('bormashenko', 6.907755278982137),
-     ('kazachkov', 6.907755278982137)]
+[('combable', 6.907755278982137),
+('ℝ3', 6.907755278982137),
+('idealizes', 6.907755278982137),
+('meteorologically', 6.907755278982137),
+('accomplishes', 6.907755278982137),
+('gidea', 6.907755278982137),
+('1584882530', 6.907755278982137),
+('abbildung', 6.907755278982137),
+('bormashenko', 6.907755278982137),
+('kazachkov', 6.907755278982137)]
 :::
 :::
 
 ::: {#distribution-of-terms-occurance-among-all-documents .section .cell .markdown jukit_cell_id="PBeq7ZpcIw"}
+
 ### Distribution of terms occurance among all documents
+
 :::
 
 ::: {.cell .code execution_count="12" jukit_cell_id="VPxjM0s195"}
 ::: {#cb21 .sourceCode}
 ::: {#cb23 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 res = query(
     """
-        select t.term, sum(p.count) 
-        from terms t join postings p on t.id = p.term_id 
+        select t.term, sum(p.count)
+        from terms t join postings p on t.id = p.term_id
         group by t.term
         order by sum(p.count) desc
     """
@@ -440,11 +487,12 @@ res = query(
 
 plt.plot([x[1] for x in res])
 ```
+
 :::
 :::
 
 ::: {.output .execute_result execution_count="12"}
-    [<matplotlib.lines.Line2D at 0x7dc550188690>]
+[<matplotlib.lines.Line2D at 0x7dc550188690>]
 :::
 
 ::: {.output .display_data}
@@ -453,13 +501,16 @@ plt.plot([x[1] for x in res])
 :::
 
 ::: {#checking-if-corpus-fulfills-zipfs-law .section .cell .markdown jukit_cell_id="Mz3pWiVxLw"}
+
 ### Checking if corpus fulfills Zipf\'s law
+
 :::
 
 ::: {.cell .code execution_count="13" jukit_cell_id="ZZsb7UgsYh"}
 ::: {#cb23 .sourceCode}
 ::: {#cb25 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 res = query(
     """
     select t.term, sum(p.count)
@@ -479,11 +530,12 @@ plt.plot(ocurrances[:1000] / N)
 plt.plot(expected_zipf[:1000])
 plt.legend(["Actual frequency", "Expected from Zipf's law"])
 ```
+
 :::
 :::
 
 ::: {.output .execute_result execution_count="13"}
-    <matplotlib.legend.Legend at 0x7dc55018da90>
+<matplotlib.legend.Legend at 0x7dc55018da90>
 :::
 
 ::: {.output .display_data}
@@ -492,13 +544,16 @@ plt.legend(["Actual frequency", "Expected from Zipf's law"])
 :::
 
 ::: {#documents-most-similar-to-the-article-open-set .section .cell .markdown jukit_cell_id="yTfKqUqIFM"}
+
 ### Documents most similar to the article **Open Set**
+
 :::
 
 ::: {.cell .code execution_count="14" jukit_cell_id="oyxhg3nskT"}
 ::: {#cb25 .sourceCode}
 ::: {#cb27 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 url = "https://en.wikipedia.org/wiki/Open_set"
 doc_id = inverted_index.get_document_id(url)
 assert doc_id is not None
@@ -521,12 +576,13 @@ for doc_id in top_5_similarities[::-1]:
     print(f"Title: {res[0]}")
     print(f"Cosine similarity: {similarities[doc_id]}\n")
 ```
+
 :::
 :::
 
 ::: {.output .stream .stdout}
-    Title: Open set
-    Cosine similarity: 1.0
+Title: Open set
+Cosine similarity: 1.0
 
     Title: Closed set
     Cosine similarity: 0.1670939050012435
@@ -539,17 +595,21 @@ for doc_id in top_5_similarities[::-1]:
 
     Title: Open and closed maps
     Cosine similarity: 0.09323925622985396
+
 :::
 :::
 
 ::: {#documents-least-similar-document-to-the-article-open-set .section .cell .markdown jukit_cell_id="tfegEl31Qc"}
+
 ### Documents least similar document to the article **Open set**
+
 :::
 
 ::: {.cell .code execution_count="15" jukit_cell_id="8LPlMdFam6"}
 ::: {#cb27 .sourceCode}
 ::: {#cb29 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 url = "https://en.wikipedia.org/wiki/Open_set"
 doc_id = inverted_index.get_document_id(url)
 assert doc_id is not None
@@ -572,12 +632,13 @@ for doc_id in top_5_similarities:
     print(f"Title: {res[0]}")
     print(f"Cosine similarity: {similarities[doc_id]}\n")
 ```
+
 :::
 :::
 
 ::: {.output .stream .stdout}
-    Title: Eastern forest hedgehog
-    Cosine similarity: 4.099291536117715e-06
+Title: Eastern forest hedgehog
+Cosine similarity: 4.099291536117715e-06
 
     Title: Chacarero
     Cosine similarity: 1.473436229790874e-05
@@ -590,13 +651,14 @@ for doc_id in top_5_similarities:
 
     Title: Gaoligong forest hedgehog
     Cosine similarity: 2.259060627956648e-05
+
 :::
 :::
 
 ::: {.cell .markdown jukit_cell_id="5qQpK8dZFl"}
-These results make sense, as Open Set relates to topics like *topology*
-and *closed sets*, while do not relate to topics like *hedgehogs* or
-*Chacarero*
+These results make sense, as Open Set relates to topics like _topology_
+and _closed sets_, while do not relate to topics like _hedgehogs_ or
+_Chacarero_
 
 **Open Set**:
 
@@ -615,13 +677,16 @@ hedgehog](data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxITEhMTExM
 :::
 
 ::: {#comparing-similiarities-between-various-documents .section .cell .markdown jukit_cell_id="DUKR4HkT1D"}
+
 # Comparing similiarities between various documents
+
 :::
 
 ::: {.cell .code execution_count="16" jukit_cell_id="O3AiHggqL4"}
 ::: {#cb29 .sourceCode}
 ::: {#cb31 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 hedghog_doc_url = "https://en.wikipedia.org/wiki/Hedgehog"
 hedgehog_doc_id = inverted_index.get_document_id(hedghog_doc_url)
 hedgehog_doc_vector = inverted_index_matrix[hedgehog_doc_id, :]
@@ -637,18 +702,22 @@ derivatives_doc_id = inverted_index.get_document_id(derivatives_doc_url)
 derivatives_doc_vector = inverted_index_matrix[derivatives_doc_id, :]
 assert derivatives_doc_vector is not None
 ```
+
 :::
 :::
 :::
 
 ::: {#cosine-similarity-and-jacard-similarity-between-hedgehog-and-calculus .section .cell .markdown jukit_cell_id="OJJuEbgXHQ"}
+
 ### Cosine similarity and Jacard similarity between hedgehog and calculus
+
 :::
 
 ::: {.cell .code execution_count="17" jukit_cell_id="PASWx1dFOx"}
 ::: {#cb30 .sourceCode}
 ::: {#cb32 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 cosine_similarity_score = cosine_similarity(hedgehog_doc_vector, calculus_doc_vector)
 jacard_similarity_score = jacard_similarity(hedgehog_doc_vector, calculus_doc_vector)
 
@@ -656,37 +725,42 @@ print("Hedgehog vs Calculus")
 print(f"Cosine similarity: {cosine_similarity_score}")
 print(f"Jacard similarity: {jacard_similarity_score}")
 ```
+
 :::
 :::
 
 ::: {.output .stream .stdout}
-    Hedgehog vs Calculus
-    Cosine similarity: 0.0036931801887427344
-    Jacard similarity: 0.09270638525247128
+Hedgehog vs Calculus
+Cosine similarity: 0.0036931801887427344
+Jacard similarity: 0.09270638525247128
 :::
 :::
 
 ::: {#cosine-similarity-and-jacard-similarity-between-calculus-and-derivatives .section .cell .markdown jukit_cell_id="fEuQuQsvN6"}
+
 ### Cosine similarity and Jacard similarity between calculus and derivatives
+
 :::
 
 ::: {.cell .code execution_count="18" jukit_cell_id="ap4wb6WJ3s"}
 ::: {#cb32 .sourceCode}
 ::: {#cb34 .sourceCode}
-``` {.sourceCode .python}
+
+```{.sourceCode .python}
 cosine_similarity_score = cosine_similarity(calculus_doc_vector, derivatives_doc_vector)
 jacard_similarity_score = jacard_similarity(calculus_doc_vector, derivatives_doc_vector)
 print("Calculus vs Derivatives")
 print(f"Cosine similarity: {cosine_similarity_score}")
 print(f"Jacard similarity: {jacard_similarity_score}")
 ```
+
 :::
 :::
 
 ::: {.output .stream .stdout}
-    Calculus vs Derivatives
-    Cosine similarity: 0.04768521737485992
-    Jacard similarity: 0.27093206951026855
+Calculus vs Derivatives
+Cosine similarity: 0.04768521737485992
+Jacard similarity: 0.27093206951026855
 :::
 :::
 
@@ -697,5 +771,7 @@ calculus, what should be expected
 :::
 
 ::: {#the-results-and-the-quality-of-recommender-would-be-higher-for-more-documents-than-only-1000-to-increase-this-number-before-building-the-db-one-could-change-total_pages-in-build_dbpy .section .cell .markdown jukit_cell_id="QgJ5R7EoO4"}
+
 ### The results and the quality of recommender would be higher for more documents than only 1000. To increase this number, before building the DB one could change `TOTAL_PAGES` in [`build_db.py`](https://github.com/shhhQuiettt/wikipedia-search-engine/blob/main/build_db.py)
+
 :::
