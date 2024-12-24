@@ -74,7 +74,7 @@ We remove the stopwords using `nltk`'s `stopwords` list.
 
 We want to store **TF-IDF** values for each word in document:
 
-$$ \text{TF}(\text{term}, \text{document}) = \frac{\#\text{ term appears in document}}{\#\text{ the most frequent term in document}} $$
+$$ \text{TF}(\text{term}, \text{document}) = \frac{\text{# term appears in document}}{\text{# the most frequent term in document}} $$
 
 $$ \text{IDF}(\text{term}) = \log \left( \frac{\text{total number of documents}}{\text{number of documents containing term}} \right) $$
 
