@@ -60,8 +60,8 @@ def calculate_document_vector(url: str, inverted_index: InvertedIndex) -> npt.ND
     inverted_index_matrix = inverted_index.get_tf_idf_matrix()
 
     tokens = tokenize(document)
-    tokens = remove_stopwords(tokens)
     tokens = lemmatize(tokens)
+    tokens = remove_stopwords(tokens)
     term_counter = get_term_couter(tokens)
 
     document_vector = np.zeros(inverted_index_matrix.shape[1])
@@ -70,29 +70,26 @@ def calculate_document_vector(url: str, inverted_index: InvertedIndex) -> npt.ND
         if term_id is None:
             continue
 
-        idf = log(
-            inverted_index_matrix.shape[0]
-            / np.count_nonzero(inverted_index_matrix[:, term_id])
-        )
+        idf = inverted_index.get_term_idf(term)
         max_count = max(term_counter.values())
+
         document_vector[term_id] = count * idf / max_count
 
     return document_vector
 
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python recommender.py <visited_urls_filename>")
+    if len(sys.argv) != 3:
+        print(
+            "Usage: python recommender.py <number of articles to recommend> <visited_urls_filename>"
+        )
         sys.exit(1)
 
-    filename = sys.argv[1]
+    k = int(sys.argv[1])
+    filename = sys.argv[2]
 
     with open(filename, "r") as f:
         visited_urls = f.read().splitlines()
-
-    print("Seen documents:")
-    for url in visited_urls:
-        print(url)
 
     inverted_index = SqliteInvertedIndex("inverted_index.db")
     inverted_index_matrix = inverted_index.get_tf_idf_matrix()
@@ -111,14 +108,14 @@ def main():
 
     m = inverted_index.get_tf_idf_matrix()
 
-    best_ids = k_nearest_to_centroid(document_vectors, m, 5, cosine_similarity)
+    best_ids = k_nearest_to_centroid(document_vectors, m, k, cosine_similarity)
 
     print(f"Best ids: {best_ids}")
 
     print("Recommended documents:")
     for doc_id, score in best_ids:
         print(inverted_index.get_document(int(doc_id)))
-        print(f"Score: {score}")
+        print(f"Cosine similarity: {score}")
         print()
 
 

@@ -1,14 +1,18 @@
 # Check for pandoc
 
+set -xe
+
+echo $PWD
+
 if ! [ -x "$(command -v pandoc)" ]; then
   echo 'Error: pandoc is not installed.' >&2
   exit 1
 fi
 
-# pandoc -s -f markdown -t html -o reports/README.html README.md --filter pandoc-include --mathjax --css=reports/styling.css --metadata title="Wikipedia search engine"
+pandoc -f markdown -t html -o reports/description.html reports/description.md  --mathjax --embed-resources=true
 
-pandoc -s exploration.ipynb -o reports/exploration.html  --metadata title="Exploration"
+pandoc -f ipynb -t html  exploration.ipynb -o reports/exploration.html   --embed-resources=true
 
+pandoc -s reports/description.html reports/exploration.html -o reports/REPORT.html --css reports/styling.css --mathjax --embed-resources=true --metadata title="Wikipedia recommender system"
 
-# jupyter nbconvert --to html exploration.ipynb --output-dir=reports --output exploration.html
 

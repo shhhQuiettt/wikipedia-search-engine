@@ -52,6 +52,9 @@ class InvertedIndex(ABC):
     def get_term_id(self, term: str) -> Any:
         pass
 
+    def get_term_idf(self, term: str) -> Any:
+        pass
+
     # @abstractmethod
     # def build_counter(self, counter: dict[str, int]):
     #     pass
@@ -215,6 +218,20 @@ class SqliteInvertedIndex(InvertedIndex):
 
         return result[0]
 
+    def get_term_idf(self, term: str) -> Any:
+        self.cursor.execute(
+            """
+            SELECT idf FROM terms WHERE term = ?
+            """,
+            (term,),
+        )
+
+        result = self.cursor.fetchone()
+        if result is None:
+            return None
+
+        return result[0]
+
 
 def worker(
     documents: Queue,
@@ -230,8 +247,8 @@ def worker(
             return
 
         tokens = tokenize(document.text)
-        tokens = remove_stopwords(tokens)
         tokens = lemmatize(tokens)
+        tokens = remove_stopwords(tokens)
 
         term_counter = get_term_couter(tokens)
         with inverted_index_dict_mutex:

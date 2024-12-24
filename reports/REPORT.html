@@ -1,24 +1,665 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Wikipedia recommender system</title>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">
+body {
+color: red;
+background-color: blue;
+}
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+margin: 0;
+padding: 0;
+border: 0;
+font: inherit;
+font-size: 100%;
+vertical-align: baseline;
+}
+html {
+line-height: 1;
+}
+ol,
+ul {
+list-style: none;
+}
+table {
+border-collapse: collapse;
+border-spacing: 0;
+}
+caption,
+th,
+td {
+text-align: left;
+font-weight: normal;
+vertical-align: middle;
+}
+q,
+blockquote {
+quotes: none;
+}
+q:before,
+q:after,
+blockquote:before,
+blockquote:after {
+content: "";
+content: none;
+}
+a img {
+border: none;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+display: block;
+}
+* {
+-moz-box-sizing: border-box;
+-webkit-box-sizing: border-box;
+box-sizing: border-box;
+}
+html {
+font-size: 16px;
+line-height: 1.6em;
+-webkit-text-size-adjust: 100%;
+}
+body {
+background-color: #fff;
+color: #545454;
+font-family: "Raleway", sans-serif;
+text-rendering: optimizeLegibility;
+max-width: 46em;
+margin: 2em auto;
+padding: 1.6em 3.15em;
+}
+h1 {
+font-family: "Raleway", sans-serif;
+font-weight: 700;
+color: #333;
+font-size: 1.6em;
+line-height: 1.3em;
+margin-bottom: 0.78571em;
+}
+h2 {
+font-family: "Raleway", sans-serif;
+font-weight: 600;
+color: #333;
+font-size: 1.3em;
+line-height: 1em;
+margin-top: 2em;
+margin-bottom: 0.6em;
+}
+h3 {
+font-family: "Raleway", sans-serif;
+font-weight: 600;
+color: #333;
+font-size: 1.15em;
+line-height: 1em;
+margin-top: 1em;
+margin-bottom: 0.6em;
+}
+h4 {
+font-family: "Raleway", sans-serif;
+font-weight: 500;
+color: #333;
+font-size: 1em;
+line-height: 1em;
+margin-top: 1em;
+margin-bottom: 0.6em;
+}
+p {
+margin-bottom: 1.57143em;
+hyphens: auto;
+}
+b,
+strong {
+font-family: "Raleway", sans-serif;
+font-weight: 700;
+}
+i,
+em {
+font-family: "Raleway", sans-serif;
+font-style: italic;
+}
+u {
+text-decoration: none;
+background-image: linear-gradient(
+to bottom,
+rgba(0, 0, 0, 0) 50%,
+#e06e73 50%
+);
+background-repeat: repeat-x;
+background-size: 2px 2px;
+background-position: 0 1.05em;
+}
+s {
+color: #878787;
+}
+a {
+color: #e74c3c;
+text-decoration: none;
+}
+img {
+max-width: 100%;
+height: auto;
+}
+blockquote {
+display: block;
+margin-left: -1em;
+padding-left: 0.8em;
+border-left: 0.2em solid #e74c3c;
+background-color: transparent;
+}
+hr {
+height: 1px;
+border: 0;
+background-color: #dedede;
+margin: 0.7em auto 0.7em;
+}
+
+ul li {
+text-indent: -0.45em;
+}
+ul li:before {
+content: "•";
+color: #e74c3c;
+display: inline-block;
+margin-right: 0.3em;
+font-size: 1.5em;
+vertical-align: middle;
+}
+ul ul {
+margin-left: 1.25714em;
+}
+ol li {
+text-indent: -1.45em;
+}
+ol ol {
+margin-left: 1.25714em;
+}
+ul,
+ol {
+margin-bottom: 1.5em;
+}
+ul ul,
+ul ol,
+ol ul,
+ol ol {
+margin-bottom: 0;
+}
+ol {
+counter-reset: ol;
+}
+ol li {
+counter-increment: ol;
+}
+ol li:before {
+content: counter(ol) ".";
+color: #e06e73;
+text-align: right;
+display: inline-block;
+min-width: 1em;
+margin-right: 0.5em;
+}
+ol li p {
+display: inline;
+}
+
+code {
+display: inline;
+background: #fcfcfc;
+border: 1px solid #dedede;
+border-radius: 0.3em;
+padding: 0.2em 0.5em;
+font-family: "Fira Code Retina", monospace;
+font-size: 0.7em;
+}
+pre {
+display: block;
+background: transparent;
+padding: 0;
+margin: 0;
+}
+pre code {
+display: block;
+width: 100%;
+line-height: 1.45em;
+padding: 1.2em 1em;
+margin: 0 0 1.5em;
+}
+.hljs {
+padding: 0;
+}
+
+input[type="checkbox"] {
+position: relative;
+width: 1rem;
+height: 1rem;
+background: white;
+-webkit-appearance: none;
+border: 1px solid #ccc;
+border-radius: 0.2em;
+margin: 0.2em 0.5em 0em -1.7em;
+margin-bottom: 0.5em;
+display: block;
+float: left;
+page-break-after: avoid;
+}
+input[type="checkbox"]:checked::before {
+display: block;
+content: "✓";
+display: initial;
+font-size: 1.1em;
+font-weight: bold;
+color: #e06e73;
+position: absolute;
+left: 0.1em;
+bottom: -0.2em;
+}
+input[type="checkbox"] ~ label {
+display: block;
+width: 100%;
+margin-bottom: 0.1em;
+}
+ul li input[type="checkbox"] {
+font: none;
+}
+ul li input[type="checkbox"] ~ label {
+display: inline-block;
+width: auto;
+margin-bottom: 0.1em;
+margin-left: 0.5em;
+}
+
+table {
+width: calc(100% + 3em);
+margin-bottom: 1.5em;
+margin-left: -1.5em;
+}
+table tr {
+border-bottom: 1px solid #dedede;
+}
+table th {
+font-weight: 700;
+}
+table td,
+table th {
+vertical-align: top;
+padding: 0.2em 1.5em;
+font-size: 0.95em;
+}
+thead tr {
+border-bottom: 4px double #dedede;
+}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Wikipedia recommender system</h1>
+</header>
+<h2 id="link-to-github">(<a href="https://github.com/shhhQuiettt/wikipedia-search-engine">Link to
+Github</a>)</h2>
+<p>The aim of this project is to index the Wikipedia and build a
+<strong>recommender system</strong> in a simplified form on top of it.
+Given a list of previously read articles, the system should recommend
+the next article to read.</p>
+<p>In this simplified form we assume that the documents are related, for
+example that they come from a <strong>single session</strong>, and we
+want to recommend the next article(s) to read.</p>
+<h3 id="process-consists-of-following-steps">Process consists of
+following steps:</h3>
+<ol type="1">
+<li><p><strong>Building the database</strong></p>
+<ol type="1">
+<li>Downloading the Wikipedia dump</li>
+<li>Text Preprocessing</li>
+<li>Indexing</li>
+<li>Storing the index</li>
+</ol></li>
+<li><p><strong>Recommending</strong></p>
+<ol type="1">
+<li>Querying the read documents</li>
+<li>Calculating similarities</li>
+<li>Recommending the k-next articles</li>
+</ol></li>
+</ol>
+<h2 id="usage">Usage</h2>
+<ol type="1">
+<li><strong>Building the database</strong></li>
+</ol>
+<p>Run this command to start the crawling and database building
+process:</p>
+<pre><code>python build_db.py</code></pre>
+<ol start="2" type="1">
+<li><strong>Recommending</strong></li>
+</ol>
+<p>Put visited links inside <code>previously_seen.txt</code> and run
+this command to get 5 recommendations:</p>
+<pre><code>python recommend.py 5 previously_seen.txt</code></pre>
+<h1 id="implementation">Implementation</h1>
+<h2 id="building-the-database">Building the database</h2>
+<p>The building and indexing is done <strong>asynchronously</strong>.
+The crawling process is implemented in a coroutine model on a one thread
+(<a href="https://github.com/shhhQuiettt/wikipedia-search-engine/blob/main/crawler.py"><code>crawler.py</code></a>),
+while the indexing is done in a separate thread with multiple workers
+(<a href="https://github.com/shhhQuiettt/wikipedia-search-engine/blob/main/indexing.py"><code>indexing.py</code></a>).</p>
+<h3 id="downloading-the-wikipedia-dump">Downloading the Wikipedia
+dump</h3>
+<p>The crawler start from <strong>three initial urls</strong> to:</p>
+<ul>
+<li>An <em>important</em> mathematical theorem: <a href="https://en.wikipedia.org/wiki/Hairy_ball_theorem">Hairy Ball
+Theorem</a></li>
+<li>Butterjelly sandwich: <a href="https://en.wikipedia.org/wiki/Butterjelly_sandwich">Butterjelly
+sandwich</a></li>
+<li>Hedgehog: <a href="https://en.wikipedia.org/wiki/Hedgehog">Hedgehog</a></li>
+</ul>
+<p>Then <code>BeautifulSoup</code> is used to parse the html and extract
+the text from the body of the document. We also extract the title of the
+document. The document gets inside a queue, where it will await
+<strong>preprocessing and indexing</strong>, and we search for all urls
+in the body to apply the procedure recursively.</p>
+<h3 id="text-preprocessing">Text Preprocessing</h3>
+<p>The text is preprocessed in the following way:</p>
+<ol type="1">
+<li><strong>Tokenization</strong></li>
+</ol>
+<p>We tokenize the text using <code>nltk</code>’s
+<code>word_tokenize</code> function to obtain a list of tokens.</p>
+<ol start="2" type="1">
+<li><strong>Lemmatization</strong></li>
+</ol>
+<p>We lemmatize the tokens using <code>nltk</code>’s
+<code>WordNetLemmatizer</code> to extract the base word of the token.
+For example the word “running” will be lemmatized to “run”.</p>
+<ol start="3" type="1">
+<li><strong>Stopwords removal</strong></li>
+</ol>
+<p>We remove the stopwords using <code>nltk</code>’s
+<code>stopwords</code> list.</p>
+<h3 id="indexing">Indexing</h3>
+<p>We want to store <strong>TF-IDF</strong> values for each word in
+document:</p>
+<p><span class="math display">\[ \text{TF}(\text{term}, \text{document})
+= \frac{\#\text{ term appears in document}}{\#\text{ the most frequent
+term in document}} \]</span></p>
+<p><span class="math display">\[ \text{IDF}(\text{term}) = \log \left(
+\frac{\text{total number of documents}}{\text{number of documents
+containing term}} \right) \]</span></p>
+<p><span class="math display">\[ \text{TF-IDF}(\text{term},
+\text{document}) = \text{TF}(\text{term}, \text{document}) \times
+\text{IDF}(\text{term}) \]</span></p>
+<p>The <strong>IDF</strong> is important in order to prioritize terms
+with <strong>high entropy</strong> among other documents</p>
+<h3 id="storing-the-index">Storing the index</h3>
+<p>In the current implementation we store inverted index inside
+<strong>sqlite</strong> database, but we abstract the index storage to
+an <em>abstract class</em> <code>InvertedIndex</code> to possibly test
+other storage methods like <strong>NoSQL</strong> databases like
+<em>mongoDB</em> or <strong>RAM-base</strong> like <em>Redis</em></p>
+<h1 id="recommending">Recommending</h1>
+<p>The read documents are queried from the database and the similarities
+are calculated using the <strong>cosine similarity</strong>. The cosine
+similarity is calculated as follows:</p>
+<p><span class="math display">\[ \text{cosine similarity}(\text{doc1},
+\text{doc2}) = \frac{\text{doc1} \cdot \text{doc2}}{\| \text{doc1} \|
+\times \| \text{doc2} \|} \]</span></p>
+<p>Where document vector is a vector of <strong>TF-IDF</strong> values
+for each word in the document.</p>
+<p>The implementation allows for using other similarity measures which
+fulfill the <code>similarity_function</code> interface
+(<code>recommender.py</code>), so we also tested <strong>Jaccard
+similarity</strong> with binary vectors:</p>
+<p><span class="math display">\[ \text{Jaccard similarity}(\text{doc1},
+\text{doc2}) = \frac{\text{doc1} \cap \text{doc2}}{\text{doc1} \cup
+\text{doc2}} \]</span></p>
+<p>In the currenct implementation we assume that the documents come from
+a <strong>single session</strong> and we want to recommend the next
+<code>k</code> article(s) to read.</p>
+<p>We calculate the <strong>centroid</strong> of the read documents and
+recommend the <code>k</code> closest documents to the centroid.</p>
+<h3 id="example-results">Example results</h3>
+<p>Running the recommender on the following documents from
+<code>./example_visited/previously_seen1.txt</code> with mathematical
+researchers</p>
+<ul>
+<li>Leonhard Euler</li>
+<li>Isaac Newton</li>
+<li>Mathematics</li>
+<li>Functions</li>
+<li>Real number</li>
+</ul>
+<p>We get the following recommendations:</p>
+<ol type="1">
+<li>Calculus:</li>
+</ol>
+<ul>
+<li>Cosine similarity: 0.06</li>
+</ul>
+<ol start="2" type="1">
+<li>Euclidean space:</li>
+</ol>
+<ul>
+<li>Cosine similarity: 0.058</li>
+</ul>
+<ol start="3" type="1">
+<li>List of important publications in mathematics:</li>
+</ol>
+<ul>
+<li>Cosine similarity: 0.056</li>
+</ul>
+<ol start="4" type="1">
+<li>Category theory:</li>
+</ol>
+<ul>
+<li>Cosine similarity: 0.049</li>
+</ul>
+<ol start="5" type="1">
+<li>Manifold:</li>
+</ol>
+<ul>
+<li>Cosine similarity: 0.045</li>
+</ul>
+<p>Which seems reasonable, given that the database contains a lot of
+non-mathematical articles related to butterjelly sandwiches and
+hedgehogs.</p>
 <section id="some-statistics-and-exploration-of-the-results" class="cell markdown" data-jukit_cell_id="5tJdZ3c28b">
 <h1>Some statistics and exploration of the results</h1>
 </section>
 <div class="cell code" data-execution_count="1" data-jukit_cell_id="BKwtjaM3EH">
-<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indexing <span class="im">import</span> SqliteInvertedIndex</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> recommender</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> recommender <span class="im">import</span> jacard_similarity, cosine_similarity</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code></pre></div>
+<div id="cb1" class="sourceCode">
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indexing <span class="im">import</span> SqliteInvertedIndex</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> recommender</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> recommender <span class="im">import</span> jacard_similarity, cosine_similarity</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code></pre></div>
+</div>
 </div>
 <div class="cell code" data-execution_count="2" data-jukit_cell_id="acP0eTQMOW">
-<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>inverted_index <span class="op">=</span> SqliteInvertedIndex(<span class="st">&quot;inverted_index.db&quot;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>inverted_index_matrix <span class="op">=</span> inverted_index.get_tf_idf_matrix()</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="kw">lambda</span> query_text: inverted_index.cursor.execute(query_text)</span></code></pre></div>
+<div id="cb2" class="sourceCode">
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>inverted_index <span class="op">=</span> SqliteInvertedIndex(<span class="st">&quot;inverted_index.db&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>inverted_index_matrix <span class="op">=</span> inverted_index.get_tf_idf_matrix()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="kw">lambda</span> query_text: inverted_index.cursor.execute(query_text)</span></code></pre></div>
+</div>
 </div>
 <section id="number-of-documents" class="cell markdown" data-jukit_cell_id="mzdCRVc0zz">
 <h2>Number of documents</h2>
 </section>
 <div class="cell code" data-execution_count="3" data-jukit_cell_id="88v3KdgHkG">
-<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>query(<span class="st">&quot;select count(*) from documents&quot;</span>).fetchone()</span></code></pre></div>
+<div id="cb3" class="sourceCode">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>query(<span class="st">&quot;select count(*) from documents&quot;</span>).fetchone()</span></code></pre></div>
+</div>
 <div class="output execute_result" data-execution_count="3">
 <pre><code>(1000,)</code></pre>
 </div>
@@ -27,7 +668,9 @@
 <h3>Number of terms</h3>
 </section>
 <div class="cell code" data-execution_count="4" data-jukit_cell_id="tlDonAt6DD">
-<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>query(<span class="st">&quot;select count(*) from terms&quot;</span>).fetchone()</span></code></pre></div>
+<div id="cb5" class="sourceCode">
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>query(<span class="st">&quot;select count(*) from terms&quot;</span>).fetchone()</span></code></pre></div>
+</div>
 <div class="output execute_result" data-execution_count="4">
 <pre><code>(116470,)</code></pre>
 </div>
@@ -36,18 +679,20 @@
 <h3>Top 20 frequently occuring terms which length is greater than 3</h3>
 </section>
 <div class="cell code" data-execution_count="5" data-jukit_cell_id="bq6KyOhPAv">
-<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> query(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="st">    select term, sum(count) </span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="st">    from postings p </span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="st">    join terms t on p.term_id = t.id </span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="st">    group by term </span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="st">    having length(term) &gt; 3 </span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="st">    order by sum(count) desc</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="st">    limit 10</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="st">            &quot;&quot;&quot;</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>res.fetchall()</span></code></pre></div>
+<div id="cb7" class="sourceCode">
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> query(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="st">    select term, sum(count) </span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="st">    from postings p </span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="st">    join terms t on p.term_id = t.id </span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="st">    group by term </span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="st">    having length(term) &gt; 3 </span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="st">    order by sum(count) desc</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="st">    limit 10</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="st">            &quot;&quot;&quot;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>res.fetchall()</span></code></pre></div>
+</div>
 <div class="output execute_result" data-execution_count="5">
 <pre><code>[(&#39;shrew&#39;, 32304),
  (&#39;function&#39;, 14177),
@@ -70,11 +715,13 @@ the documents related to mammals and other animals</p>
 <h3>Terms with lowest entropy</h3>
 </section>
 <div class="cell code" data-execution_count="6" data-jukit_cell_id="7iVCUI0aWb">
-<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>query(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="st">        select term, idf from terms order by idf asc limit 10</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>).fetchall()</span></code></pre></div>
+<div id="cb9" class="sourceCode">
+<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>query(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="st">        select term, idf from terms order by idf asc limit 10</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>).fetchall()</span></code></pre></div>
+</div>
 <div class="output execute_result" data-execution_count="6">
 <pre><code>[(&#39;retrieved&#39;, 0.0),
  (&#39;http&#39;, 0.0),
@@ -92,11 +739,13 @@ the documents related to mammals and other animals</p>
 <h3>Terms with highest entropy</h3>
 </section>
 <div class="cell code" data-execution_count="7" data-jukit_cell_id="2pSmidhWJs">
-<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>query(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="st">  select term, idf from terms order by idf desc limit 10</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="st">  &quot;&quot;&quot;</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>).fetchall()</span></code></pre></div>
+<div id="cb11" class="sourceCode">
+<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>query(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="st">  select term, idf from terms order by idf desc limit 10</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="st">  &quot;&quot;&quot;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>).fetchall()</span></code></pre></div>
+</div>
 <div class="output execute_result" data-execution_count="7">
 <pre><code>[(&#39;combable&#39;, 6.907755278982137),
  (&#39;ℝ3&#39;, 6.907755278982137),
@@ -114,16 +763,18 @@ the documents related to mammals and other animals</p>
 <h3>Distribution of terms occurance among all documents</h3>
 </section>
 <div class="cell code" data-execution_count="8" data-jukit_cell_id="VPxjM0s195">
-<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> query(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="st">        select t.term, sum(p.count) </span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="st">        from terms t join postings p on t.id = p.term_id </span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="st">        group by t.term</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="st">        order by sum(p.count) desc</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;&quot;&quot;</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>).fetchall()</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>plt.plot([x[<span class="dv">1</span>] <span class="cf">for</span> x <span class="kw">in</span> res])</span></code></pre></div>
+<div id="cb13" class="sourceCode">
+<div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> query(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="st">        select t.term, sum(p.count) </span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="st">        from terms t join postings p on t.id = p.term_id </span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="st">        group by t.term</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="st">        order by sum(p.count) desc</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;&quot;&quot;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>).fetchall()</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>plt.plot([x[<span class="dv">1</span>] <span class="cf">for</span> x <span class="kw">in</span> res])</span></code></pre></div>
+</div>
 <div class="output execute_result" data-execution_count="8">
 <pre><code>[&lt;matplotlib.lines.Line2D at 0x7ee0c180f9d0&gt;]</code></pre>
 </div>
@@ -135,24 +786,26 @@ the documents related to mammals and other animals</p>
 <h3>Checking if corpus fulfills Zipf&#39;s law</h3>
 </section>
 <div class="cell code" data-execution_count="9" data-jukit_cell_id="ZZsb7UgsYh">
-<div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> query(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="st">    select t.term, sum(p.count)</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="st">    from terms t join postings p on t.id = p.term_id</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="st">    group by t.term</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="st">    order by sum(p.count) desc</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;&quot;&quot;</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>).fetchall()</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>ocurrances <span class="op">=</span> np.array([x[<span class="dv">1</span>] <span class="cf">for</span> x <span class="kw">in</span> res])</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="bu">len</span>(ocurrances)</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> ocurrances[<span class="dv">3</span>] <span class="op">/</span> N <span class="op">*</span> <span class="dv">4</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>expected_zipf <span class="op">=</span> k <span class="op">/</span> np.arange(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>cut_off <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>plt.plot(ocurrances[:<span class="dv">1000</span>] <span class="op">/</span> N)</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>plt.plot(expected_zipf[:<span class="dv">1000</span>])</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>plt.legend([<span class="st">&quot;Actual frequency&quot;</span>, <span class="st">&quot;Expected from Zipf&#39;s law&quot;</span>])</span></code></pre></div>
+<div id="cb15" class="sourceCode">
+<div class="sourceCode" id="cb17"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> query(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="st">    select t.term, sum(p.count)</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="st">    from terms t join postings p on t.id = p.term_id</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="st">    group by t.term</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="st">    order by sum(p.count) desc</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;&quot;&quot;</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>).fetchall()</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>ocurrances <span class="op">=</span> np.array([x[<span class="dv">1</span>] <span class="cf">for</span> x <span class="kw">in</span> res])</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="bu">len</span>(ocurrances)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> ocurrances[<span class="dv">3</span>] <span class="op">/</span> N <span class="op">*</span> <span class="dv">4</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>expected_zipf <span class="op">=</span> k <span class="op">/</span> np.arange(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>cut_off <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>plt.plot(ocurrances[:<span class="dv">1000</span>] <span class="op">/</span> N)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>plt.plot(expected_zipf[:<span class="dv">1000</span>])</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>plt.legend([<span class="st">&quot;Actual frequency&quot;</span>, <span class="st">&quot;Expected from Zipf&#39;s law&quot;</span>])</span></code></pre></div>
+</div>
 <div class="output execute_result" data-execution_count="9">
 <pre><code>&lt;matplotlib.legend.Legend at 0x7ee089210d70&gt;</code></pre>
 </div>
@@ -164,27 +817,29 @@ the documents related to mammals and other animals</p>
 <h3>Documents most similar to the article <strong>Open Set</strong></h3>
 </section>
 <div class="cell code" data-execution_count="10" data-jukit_cell_id="oyxhg3nskT">
-<div class="sourceCode" id="cb17"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/Open_set&quot;</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>doc_id <span class="op">=</span> inverted_index.get_document_id(url)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> doc_id <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>doc_vector <span class="op">=</span> inverted_index_matrix[doc_id, :]</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>similarities <span class="op">=</span> np.apply_along_axis(</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> x: cosine_similarity(doc_vector, x), <span class="dv">1</span>, inverted_index_matrix</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>top_5_similarities <span class="op">=</span> np.argsort(similarities, axis<span class="op">=</span><span class="dv">0</span>)[<span class="op">-</span><span class="dv">6</span>:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> doc_id <span class="kw">in</span> top_5_similarities[::<span class="op">-</span><span class="dv">1</span>]:</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> query(</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&quot;&quot;&quot;</span></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="ss">        select title from documents where id = </span><span class="sc">{</span>doc_id<span class="sc">}</span></span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="ss">        &quot;&quot;&quot;</span>,</span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    ).fetchone()</span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> res <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Title: </span><span class="sc">{</span>res[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Cosine similarity: </span><span class="sc">{</span>similarities[doc_id]<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<div id="cb17" class="sourceCode">
+<div class="sourceCode" id="cb19"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/Open_set&quot;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>doc_id <span class="op">=</span> inverted_index.get_document_id(url)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> doc_id <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>doc_vector <span class="op">=</span> inverted_index_matrix[doc_id, :]</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>similarities <span class="op">=</span> np.apply_along_axis(</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> x: cosine_similarity(doc_vector, x), <span class="dv">1</span>, inverted_index_matrix</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>top_5_similarities <span class="op">=</span> np.argsort(similarities, axis<span class="op">=</span><span class="dv">0</span>)[<span class="op">-</span><span class="dv">6</span>:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> doc_id <span class="kw">in</span> top_5_similarities[::<span class="op">-</span><span class="dv">1</span>]:</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> query(</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&quot;&quot;&quot;</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="ss">        select title from documents where id = </span><span class="sc">{</span>doc_id<span class="sc">}</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="ss">        &quot;&quot;&quot;</span>,</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    ).fetchone()</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> res <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Title: </span><span class="sc">{</span>res[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Cosine similarity: </span><span class="sc">{</span>similarities[doc_id]<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>)</span></code></pre></div>
+</div>
 <div class="output stream stdout">
 <pre><code>Title: Open set
 Cosine similarity: 1.0
@@ -200,7 +855,6 @@ Cosine similarity: 0.09323925622985396
 
 Title: Open and closed maps
 Cosine similarity: 0.09323925622985396
-
 </code></pre>
 </div>
 </div>
@@ -209,27 +863,29 @@ Cosine similarity: 0.09323925622985396
 set</strong></h3>
 </section>
 <div class="cell code" data-execution_count="11" data-jukit_cell_id="8LPlMdFam6">
-<div class="sourceCode" id="cb19"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/Open_set&quot;</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>doc_id <span class="op">=</span> inverted_index.get_document_id(url)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> doc_id <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>doc_vector <span class="op">=</span> inverted_index_matrix[doc_id, :]</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>similarities <span class="op">=</span> np.apply_along_axis(</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> x: cosine_similarity(doc_vector, x), <span class="dv">1</span>, inverted_index_matrix</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>top_5_similarities <span class="op">=</span> np.argsort(similarities, axis<span class="op">=</span><span class="dv">0</span>)[:<span class="dv">5</span>]</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> doc_id <span class="kw">in</span> top_5_similarities:</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> query(</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&quot;&quot;&quot;</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="ss">        select title from documents where id = </span><span class="sc">{</span>doc_id<span class="sc">}</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="ss">        &quot;&quot;&quot;</span>,</span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    ).fetchone()</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> res <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Title: </span><span class="sc">{</span>res[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Cosine similarity: </span><span class="sc">{</span>similarities[doc_id]<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<div id="cb19" class="sourceCode">
+<div class="sourceCode" id="cb21"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/Open_set&quot;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>doc_id <span class="op">=</span> inverted_index.get_document_id(url)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> doc_id <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>doc_vector <span class="op">=</span> inverted_index_matrix[doc_id, :]</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>similarities <span class="op">=</span> np.apply_along_axis(</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> x: cosine_similarity(doc_vector, x), <span class="dv">1</span>, inverted_index_matrix</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>top_5_similarities <span class="op">=</span> np.argsort(similarities, axis<span class="op">=</span><span class="dv">0</span>)[:<span class="dv">5</span>]</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> doc_id <span class="kw">in</span> top_5_similarities:</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> query(</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&quot;&quot;&quot;</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="ss">        select title from documents where id = </span><span class="sc">{</span>doc_id<span class="sc">}</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="ss">        &quot;&quot;&quot;</span>,</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    ).fetchone()</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> res <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Title: </span><span class="sc">{</span>res[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Cosine similarity: </span><span class="sc">{</span>similarities[doc_id]<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>)</span></code></pre></div>
+</div>
 <div class="output stream stdout">
 <pre><code>Title: Eastern forest hedgehog
 Cosine similarity: 4.099291536117715e-06
@@ -245,7 +901,6 @@ Cosine similarity: 2.2237134281189762e-05
 
 Title: Gaoligong forest hedgehog
 Cosine similarity: 2.259060627956648e-05
-
 </code></pre>
 </div>
 </div>
@@ -264,37 +919,40 @@ topics like <em>hedgehogs</em> or <em>Chacarero</em></p>
 <h2>Comparing similiarities between various documents</h2>
 </section>
 <div class="cell code" data-execution_count="12" data-jukit_cell_id="O3AiHggqL4">
-<div class="sourceCode" id="cb21"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>hedghog_doc_url <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/Hedgehog&quot;</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>hedgehog_doc_id <span class="op">=</span> inverted_index.get_document_id(hedghog_doc_url)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>hedgehog_doc_vector <span class="op">=</span> inverted_index_matrix[hedgehog_doc_id, :]</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> hedgehog_doc_vector <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>calculus_doc_url <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/Calculus&quot;</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>calculus_doc_id <span class="op">=</span> inverted_index.get_document_id(calculus_doc_url)</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>calculus_doc_vector <span class="op">=</span> inverted_index_matrix[calculus_doc_id, :]</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> calculus_doc_vector <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>derivatives_doc_url <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/Derivative&quot;</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>derivatives_doc_id <span class="op">=</span> inverted_index.get_document_id(derivatives_doc_url)</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>derivatives_doc_vector <span class="op">=</span> inverted_index_matrix[derivatives_doc_id, :]</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> derivatives_doc_vector <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span></code></pre></div>
+<div id="cb21" class="sourceCode">
+<div class="sourceCode" id="cb23"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>hedghog_doc_url <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/Hedgehog&quot;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>hedgehog_doc_id <span class="op">=</span> inverted_index.get_document_id(hedghog_doc_url)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>hedgehog_doc_vector <span class="op">=</span> inverted_index_matrix[hedgehog_doc_id, :]</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> hedgehog_doc_vector <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>calculus_doc_url <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/Calculus&quot;</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>calculus_doc_id <span class="op">=</span> inverted_index.get_document_id(calculus_doc_url)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>calculus_doc_vector <span class="op">=</span> inverted_index_matrix[calculus_doc_id, :]</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> calculus_doc_vector <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>derivatives_doc_url <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/Derivative&quot;</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>derivatives_doc_id <span class="op">=</span> inverted_index.get_document_id(derivatives_doc_url)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>derivatives_doc_vector <span class="op">=</span> inverted_index_matrix[derivatives_doc_id, :]</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> derivatives_doc_vector <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span></code></pre></div>
+</div>
 </div>
 <section id="cosine-similarity-and-jacard-similarity-between-hedgehog-and-calculus" class="cell markdown" data-jukit_cell_id="OJJuEbgXHQ">
 <h3>Cosine similarity and Jacard similarity between hedgehog and
 calculus</h3>
 </section>
 <div class="cell code" data-execution_count="13" data-jukit_cell_id="PASWx1dFOx">
-<div class="sourceCode" id="cb22"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>cosine_similarity_score <span class="op">=</span> cosine_similarity(hedgehog_doc_vector, calculus_doc_vector)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>jacard_similarity_score <span class="op">=</span> jacard_similarity(hedgehog_doc_vector, calculus_doc_vector)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Hedgehog vs Calculus&quot;</span>)</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Cosine similarity: </span><span class="sc">{</span>cosine_similarity_score<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Jacard similarity: </span><span class="sc">{</span>jacard_similarity_score<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<div id="cb22" class="sourceCode">
+<div class="sourceCode" id="cb24"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cosine_similarity_score <span class="op">=</span> cosine_similarity(hedgehog_doc_vector, calculus_doc_vector)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>jacard_similarity_score <span class="op">=</span> jacard_similarity(hedgehog_doc_vector, calculus_doc_vector)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Hedgehog vs Calculus&quot;</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Cosine similarity: </span><span class="sc">{</span>cosine_similarity_score<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Jacard similarity: </span><span class="sc">{</span>jacard_similarity_score<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+</div>
 <div class="output stream stdout">
 <pre><code>Hedgehog vs Calculus
 Cosine similarity: 0.0036931801887427344
-Jacard similarity: 0.09270638525247128
-</code></pre>
+Jacard similarity: 0.09270638525247128</code></pre>
 </div>
 </div>
 <section id="cosine-similarity-and-jacard-similarity-between-calculus-and-derivatives" class="cell markdown" data-jukit_cell_id="fEuQuQsvN6">
@@ -302,16 +960,17 @@ Jacard similarity: 0.09270638525247128
 derivatives</h3>
 </section>
 <div class="cell code" data-execution_count="14" data-jukit_cell_id="ap4wb6WJ3s">
-<div class="sourceCode" id="cb24"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cosine_similarity_score <span class="op">=</span> cosine_similarity(calculus_doc_vector, derivatives_doc_vector)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>jacard_similarity_score <span class="op">=</span> jacard_similarity(calculus_doc_vector, derivatives_doc_vector)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Calculus vs Derivatives&quot;</span>)</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Cosine similarity: </span><span class="sc">{</span>cosine_similarity_score<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Jacard similarity: </span><span class="sc">{</span>jacard_similarity_score<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<div id="cb24" class="sourceCode">
+<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cosine_similarity_score <span class="op">=</span> cosine_similarity(calculus_doc_vector, derivatives_doc_vector)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>jacard_similarity_score <span class="op">=</span> jacard_similarity(calculus_doc_vector, derivatives_doc_vector)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Calculus vs Derivatives&quot;</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Cosine similarity: </span><span class="sc">{</span>cosine_similarity_score<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Jacard similarity: </span><span class="sc">{</span>jacard_similarity_score<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+</div>
 <div class="output stream stdout">
 <pre><code>Calculus vs Derivatives
 Cosine similarity: 0.04768521737485992
-Jacard similarity: 0.27093206951026855
-</code></pre>
+Jacard similarity: 0.27093206951026855</code></pre>
 </div>
 </div>
 <div class="cell markdown" data-jukit_cell_id="W3JyCuLY4a">
@@ -320,5 +979,9 @@ Jacard similarity: 0.27093206951026855
 similarity between hedgehog and calculus, what should be expected</p>
 </div>
 <div class="cell code" data-jukit_cell_id="QgJ5R7EoO4">
-<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"></code></pre></div>
+<div id="cb26" class="sourceCode">
+<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"></code></pre></div>
 </div>
+</div>
+</body>
+</html>
