@@ -50,7 +50,7 @@ python build_db.py
 Put visited links inside `previously_seen.txt` and run this command to get 5 recommendations:
 
 ```
-python recommend.py 5 previously_seen.txt
+python recommender.py 5 previously_seen.txt
 ```
 
 # Implementation
