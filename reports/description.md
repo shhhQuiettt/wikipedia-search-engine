@@ -1,3 +1,5 @@
+Krzysztof Skrobała, Wojciech Bogacz
+
 ## ([Link to Github](https://github.com/shhhQuiettt/wikipedia-search-engine))
 
 The aim of this project is to index the Wikipedia and build a **recommender system** in a simplified form on top of it.
