@@ -25,15 +25,28 @@ following steps:</h3>
 </ol></li>
 </ol>
 <h2 id="usage">Usage</h2>
-<ol type="1">
-<li><strong>Building the database</strong></li>
-</ol>
+<ul>
+<li><strong>1. Cloning the repository</strong></li>
+</ul>
+<pre><code>git clone --depth 1 https://github.com/shhhQuiettt/wikipedia-search-engine.git
+cd wikipedia-search-engine
+</code></pre>
+<ul>
+<li><strong>2. Creating virtual environment and downloading necessary
+packages</strong></li>
+</ul>
+<pre><code>python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt</code></pre>
+<ul>
+<li><strong>2. Building the database</strong></li>
+</ul>
 <p>Run this command to start the crawling and database building
 process:</p>
 <pre><code>python build_db.py</code></pre>
-<ol start="2" type="1">
-<li><strong>Recommending</strong></li>
-</ol>
+<ul>
+<li><strong>3. Recommending</strong></li>
+</ul>
 <p>Put visited links inside <code>previously_seen.txt</code> and run
 this command to get 5 recommendations:</p>
 <pre><code>python recommend.py 5 previously_seen.txt</code></pre>

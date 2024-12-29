@@ -21,7 +21,23 @@ In this simplified form we assume that the documents are related, for example th
 
 ## Usage
 
-1. **Building the database**
+- **1. Cloning the repository**
+
+```
+git clone --depth 1 https://github.com/shhhQuiettt/wikipedia-search-engine.git
+cd wikipedia-search-engine
+
+```
+
+- **2. Creating virtual environment and downloading necessary packages**
+
+```
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+- **2. Building the database**
 
 Run this command to start the crawling and database building process:
 
@@ -29,7 +45,7 @@ Run this command to start the crawling and database building process:
 python build_db.py
 ```
 
-2. **Recommending**
+- **3. Recommending**
 
 Put visited links inside `previously_seen.txt` and run this command to get 5 recommendations:
 
