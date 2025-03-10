@@ -369,7 +369,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a h
 <pre><code>[&lt;matplotlib.lines.Line2D at 0x7ff29a850690&gt;]</code></pre>
 </div>
 <div class="output display_data">
-<p><img src="a3a5147a407b6e537d935838d4fef9c8279d6429.png" /></p>
+<p><img src="./reports/imgs/distribution.png" /></p>
 </div>
 </div>
 <section id="checking-if-corpus-fulfills-zipfs-law"
